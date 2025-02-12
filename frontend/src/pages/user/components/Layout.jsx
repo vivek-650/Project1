@@ -1,7 +1,8 @@
 import { useState } from "react";
-import Navbar from "./Navbar";
+// import Navbar from "../Navbar";
 import { Colors } from "../../../../utils/constants";
 import { Outlet, useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 export const Layout = () => {
   const [activeTab, setActiveTab] = useState(null);
@@ -10,18 +11,23 @@ export const Layout = () => {
   const menuItems = [
     {
       id: "1",
-      name: "Dashboard",
-      link: "/admin/dashboard",
+      name: "All Recepies",
+      link: "/user/recepies",
     },
     {
       id: "2",
-      name: "Users",
-      link: "/admin/users",
+      name: "Drafts",
+      link: "/user/drafts",
     },
     {
       id: "3",
-      name: "Requests",
-      link: "/admin/requests",
+      name: "uploaded",
+      link: "/user/uploaded",
+    },
+    {
+      id: "4",
+      name: "Add new recepie",
+      link: "/user/new-recepie",
     },
   ];
 
@@ -54,7 +60,7 @@ export const Layout = () => {
 
   return (
     <div style={styles.main}>
-      <Navbar userName={"TestAdmin"} />
+      <Navbar userName={"TestUser"} />
       <div style={styles.leftMenu}>
         {menuItems.map((item) => (
           <div
