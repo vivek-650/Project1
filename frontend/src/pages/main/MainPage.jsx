@@ -5,9 +5,9 @@ const MainPage = () => {
 
     const handleRoleSelection = (role) => {
         if (role === "admin") {
-            navigate("/admin-login");
+            navigate("/admin");
         } else if (role === "user") {
-            navigate("/user-login");
+            navigate("/user");
         }
     };
 
