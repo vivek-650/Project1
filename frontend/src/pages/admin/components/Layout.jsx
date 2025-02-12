@@ -8,11 +8,11 @@ export const Layout = () => {
   const navigate = useNavigate();
 
   const menuItems = [
-    {
-      id: "1",
-      name: "Dashboard",
-      link: "/admin/dashboard",
-    },
+    // {
+    //   id: "1",
+    //   name: "Dashboard",
+    //   link: "/admin/dashboard",
+    // },
     {
       id: "2",
       name: "Users",
@@ -39,6 +39,7 @@ export const Layout = () => {
     },
     menuItems: {
       padding: "10%",
+      cursor: "pointer",
     },
     rightContent: {
       position: "absolute",

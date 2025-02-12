@@ -45,11 +45,13 @@ export const Layout = () => {
     },
     menuItems: {
       padding: "10%",
+      cursor: "pointer",
     },
     rightContent: {
-      backgroundColor: "red",
+      position: "absolute",
+      left: "10%",
       height: "100%",
-      width: '100%'
+      width: "90%",
     },
   };
 
