@@ -21,16 +21,18 @@ const MainPage = () => {
     };
 
     const buttonStyle = {
+
         margin: '10px',
         padding: '10px 20px',
-        fontSize: '16px',
-        cursor: 'pointer'
+        fontSize: '1rem',
+        cursor: 'pointer',
+        width: '25%',
     };
 
     return (
         <div style={containerStyle}>
             <h1>Select Your Role</h1>
-            <div>
+            <div style={{width: '100%', justifyContent: 'center', display: 'flex'}}>    
             <button style={buttonStyle} onClick={() => handleRoleSelection("admin")}>Admin</button>
             <button style={buttonStyle} onClick={() => handleRoleSelection("user")}>User</button>
             </div>
