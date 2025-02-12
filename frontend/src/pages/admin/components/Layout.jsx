@@ -41,9 +41,10 @@ export const Layout = () => {
       padding: "10%",
     },
     rightContent: {
-      backgroundColor: "red",
+      position: "absolute",
+      left: "10%",
       height: "100%",
-      width: '100%'
+      width: "90%",
     },
   };
 

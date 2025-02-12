@@ -22,7 +22,7 @@ const Navbar = ({ userName, onLogout }) => {
       fontWeight: "bold",
     },
     logoutButton: {
-      backgroundColor: "#f50057",
+      backgroundColor: "#222222",
       color: "white",
       border: "none",
       padding: "8px 16px",
