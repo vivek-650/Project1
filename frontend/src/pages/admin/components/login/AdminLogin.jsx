@@ -4,31 +4,50 @@ const AdminLogin = () => {
   const styles = {
     loginCard: {
       maxWidth: '400px',
-      margin: '0 auto',
+      margin: '1.5rem auto',
       padding: '2rem',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      borderRadius: '8px',
+      borderRadius: '10px',
       backgroundColor: '#fff',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
     },
     brand: {
-      textAlign: 'center',
-      marginBottom: '2rem',
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: '.5rem',
     },
     brandLogo: {
-      width: '50px',
-      height: '50px',
-      marginBottom: '1rem',
+      width: '100px',
+      height: '100px',
+      marginBottom: '0rem',
       backgroundColor: '#ccc',
       borderRadius: '50%',
     },
+    loginForm:{
+      display: "flex",
+      flexDirection: "column",
+      width: '100%',
+    },
     formGroup: {
-      marginBottom: '1rem',
+      marginBottom: '.5rem',
+      display: "flex",
+      flexDirection: "column",
+      width: '100%',
     },
     input:{
-      width: "60%",
-      height: "20%",
-
-
+      width: "97%",
+      height: "25px",
+      marginTop: "0.5rem",
+      padding: "5px",
+      borderRadius: "5px",
+      border: '1px solid grey'
+    },
+    label:{
+      fontSize: '1.05rem'
     },
     error: {
       color: 'red',
@@ -40,6 +59,7 @@ const AdminLogin = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: '1rem',
+      width: '100%',
     },
     loginBtn: {
       width: '100%',
@@ -50,7 +70,6 @@ const AdminLogin = () => {
       borderRadius: '4px',
       cursor: 'pointer',
     },
-    
     signupLink: {
       textAlign: 'center',
       marginTop: '2rem',
@@ -59,18 +78,18 @@ const AdminLogin = () => {
   return (
     <div style={styles.loginCard}>
         <div style={styles.brand}>
-            <div style={styles.brandLogo}></div>
-            <h1>Welcome back</h1>
+            <img style={styles.brandLogo} src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS9WDX7JlmoXx1-KXqPeJAwiS0xWGDmjBEWw&s" alt="logo"></img>
+            <h1>Welcome back !</h1>
             <p>Enter your credentials to access your account</p>
         </div>
 
-        <form id="loginForm">
+        <form id="loginForm" style={styles.loginForm}>
             <div style={styles.formGroup}>
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email" style={styles.label}>Email</label>
                 <input 
                     type="email" 
                     id="email" 
-                    placeholder="name@company.com"
+                    placeholder="Enter username"
                     autoComplete="email"
                     style={styles.input}
                 />
@@ -78,21 +97,18 @@ const AdminLogin = () => {
             </div>
 
             <div style={styles.formGroup}>
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password" style={styles.label}>Password</label>
                 <input 
                     type="password" 
                     id="password" 
                     placeholder="Enter your password"
                     autoComplete="current-password"
+                    style={styles.input}
                 />
                 <div style={styles.error} id="passwordError"></div>
             </div>
 
             <div style={styles.rememberForgot}>
-                <div>
-                    <input type="checkbox" id="remember" />
-                    <label htmlFor="remember">Remember me</label>
-                </div>
                 <a href="#" className="forgot-password">Forgot password?</a>
             </div>
 
@@ -102,7 +118,7 @@ const AdminLogin = () => {
         </form>
 
         <div style={styles.signupLink}>
-            <p>Don&apos;t have an account? <a href="#">Sign up</a></p>
+            {/* <p>Don&apos;t have an account? <a href="#">Sign up</a></p> */}
         </div>
     </div>
   )
