@@ -29,16 +29,17 @@ const Navbar = ({ userName, onLogout }) => {
       cursor: "pointer",
     },
   };
-return (
+
+  return (
     <div style={styles.navbar}>
-        <div style={styles.toolbar}>
-            <div style={styles.title}>{userName}</div>
-            <button style={styles.logoutButton} onClick={onLogout}>
-                Logout
-            </button>
-        </div>
+      <div style={styles.toolbar}>
+        <div style={styles.title}>{userName}</div>
+        <button style={styles.logoutButton} onClick={onLogout}>
+          Logout
+        </button>
+      </div>
     </div>
-);
+  );
 };
 
 export default Navbar;

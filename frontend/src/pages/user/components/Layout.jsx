@@ -60,9 +60,14 @@ export const Layout = () => {
     navigate(menu.link);
   };
 
+  const handleLogout = () => {
+    sessionStorage.clear("userToken");
+    navigate("/user");
+  };
+
   return (
     <div style={styles.main}>
-      <Navbar userName={"TestUser"} />
+      <Navbar userName={"TestUser"} onLogout={handleLogout} />
       <div style={styles.leftMenu}>
         {menuItems.map((item) => (
           <div

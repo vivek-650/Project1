@@ -8,15 +8,15 @@ export const Layout = () => {
   const navigate = useNavigate();
 
   const menuItems = [
-    // {
-    //   id: "1",
-    //   name: "Dashboard",
-    //   link: "/admin/dashboard",
-    // },
+    {
+      id: "1",
+      name: "All Users",
+      link: "/admin/users",
+    },
     {
       id: "2",
-      name: "Users",
-      link: "/admin/users",
+      name: "Add users",
+      link: "/admin/add-users",
     },
     {
       id: "3",
@@ -54,9 +54,14 @@ export const Layout = () => {
     navigate(menu.link);
   };
 
+  const handleLogout = () => {
+    sessionStorage.clear("adminToken");
+    navigate("/admin");
+  };
+
   return (
     <div style={styles.main}>
-      <Navbar userName={"TestAdmin"} />
+      <Navbar userName={"TestAdmin"} onLogout={handleLogout} />
       <div style={styles.leftMenu}>
         {menuItems.map((item) => (
           <div
