@@ -94,7 +94,7 @@ const AdminLogin = () => {
     loginBtn: {
       width: "100%",
       padding: "0.75rem",
-      backgroundColor: "#007bff",
+      backgroundColor: "black",
       color: "#fff",
       border: "none",
       borderRadius: "4px",
