@@ -56,6 +56,7 @@ const UserLogin = () => {
     }
 
     if (isValid) {
+      sessionStorage.setItem("userToken", "UserToken001")
       setShowPopup(false);
       alert("Password successfully updated!");
       navigate("/user/dashboard");

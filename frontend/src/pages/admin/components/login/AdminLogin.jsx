@@ -35,6 +35,7 @@ const AdminLogin = () => {
     }
 
     if (isValid) {
+      sessionStorage.setItem("adminToken", "AdminToken001");
       alert("Login successful!");
       navigate("/admin/dashboard");
     }
