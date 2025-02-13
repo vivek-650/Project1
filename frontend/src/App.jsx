@@ -1,5 +1,5 @@
 // import React from 'react'
-import MainRoutes from "./pages/routes/mainRoutes"
+import MainRoutes from "./pages/routes/MainRoutes"
 
 const App = () => {
   return (

@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { Layout } from "../user/components/Layout";
 import Dashboard from "../user/pages/dashboard/Dashboard";
 import Recepies from "../user/pages/Recepies/Recepies";
-import Drafts from "../user/pages/drafts/drafts";
+import Drafts from "../user/pages/drafts/Drafts";
 import Uploaded from "../user/pages/uploaded/Uploaded";
 import AddRecepies from "../user/pages/AddRecepies/AddRecepies";
 
