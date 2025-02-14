@@ -13,6 +13,8 @@ export const Users = () => {
         const data = await response.json();
         // console.log("Data: ", data);
         setUsers(data);
+      } else {
+        console.log("Error in get Users");
       }
     } catch (error) {
       console.log("Error during get Users: ", error);
