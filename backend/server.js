@@ -10,7 +10,7 @@ import { db, storage } from "./config/firebase.js";
 const app = express(); // ✅ Now this won't conflict
 
 // Middleware
-app.use(cors());
+app.use(cors("http://localhost:5173/"));
 app.use(bodyParser.json());
 
 // Routes
