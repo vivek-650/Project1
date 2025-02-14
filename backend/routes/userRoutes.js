@@ -8,7 +8,13 @@ router.post("/add-recipe", async (req, res) => {
   try {
     const { email, title, ingredients, instructions, explanation } = req.body;
     const recipeRef = db.collection("recipes").doc();
-    await recipeRef.set({ email, title, ingredients, instructions, explanation });
+    await recipeRef.set({
+      email,
+      title,
+      ingredients,
+      instructions,
+      explanation,
+    });
 
     res.json({ message: "Recipe added successfully" });
   } catch (error) {
@@ -20,9 +26,12 @@ router.post("/add-recipe", async (req, res) => {
 router.get("/recipes/:email", async (req, res) => {
   try {
     const { email } = req.params;
-    const recipesSnapshot = await db.collection("recepies").where("email", "==", email).get();
-    const recipes = recipesSnapshot.docs.map(doc => doc.data());
-
+    const recipesSnapshot = await db
+      .collection("recipes")
+      .where("email", "==", email)
+      .get();
+    const recipes = recipesSnapshot.docs.map((doc) => doc.data());
+    console.log(recipes);
     res.json(recipes);
   } catch (error) {
     res.status(500).json({ error: error.message });
