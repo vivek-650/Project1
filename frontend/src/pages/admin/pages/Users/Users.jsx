@@ -5,9 +5,12 @@ export const Users = () => {
 
   const getUsers = async () => {
     try {
-      const response = await fetch("http://localhost:4040/api/admin/users", {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/admin/users`,
+        {
+          method: "GET",
+        }
+      );
       // console.log("Response: ", response);
       if (response.ok) {
         const data = await response.json();
