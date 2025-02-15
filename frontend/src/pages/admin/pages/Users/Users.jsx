@@ -32,7 +32,7 @@ export const Users = () => {
     <div>
       <h1>All Users</h1>
       <hr />
-      {users == [] ? (
+      {users.length === 0 ? (
         <div>
           <p>No Users Present</p>
         </div>

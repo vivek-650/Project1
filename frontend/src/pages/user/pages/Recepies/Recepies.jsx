@@ -31,13 +31,13 @@ const Recepies = () => {
     <div>
       <h1>All Recpies</h1>
       <hr />
-      {recpies == [] ? (
+      {recpies.length === 0 ? (
         <div>
           <h2>No Recpies Found</h2>
         </div>
       ) : (
-        recpies.map((item) => (
-          <div key={item.email}>
+        recpies.map((item, index) => (
+          <div key={index}>
             <h3>{item.title}</h3>
             <p>Ingredients: {item.ingredients}</p>
             <p>Instruction: {item.instructions}</p>
