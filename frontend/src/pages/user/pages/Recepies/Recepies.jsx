@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const Recepies = () => {
   const [recpies, setRecpies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getRecpies = async () => {
     try {
@@ -11,7 +12,6 @@ const Recepies = () => {
           method: "GET",
         }
       );
-      // console.log("Get recpies api response: ", response);
       if (response.ok) {
         const data = await response.json();
         console.log("Recpies Data: ", data);
@@ -21,17 +21,22 @@ const Recepies = () => {
       }
     } catch (error) {
       console.log("Error in get Recpies: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getRecpies();
   }, []);
+
   return (
     <div>
       <h1>All Recpies</h1>
       <hr />
-      {recpies.length === 0 ? (
+      {loading ? (
+        <div>Loading...</div>
+      ) : recpies.length === 0 ? (
         <div>
           <h2>No Recpies Found</h2>
         </div>
