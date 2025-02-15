@@ -45,7 +45,10 @@ router.post("/block-user", async (req, res) => {
 router.get("/users", async (req, res) => {
   try {
     const usersSnapshot = await db.collection("users").get();
-    const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const users = usersSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });

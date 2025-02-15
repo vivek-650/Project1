@@ -43,13 +43,13 @@ export const AddUsers = () => {
   };
 
   const handleAddUser = () => {
-    createUser({
+    createUser();
+    setUser({
       name: "",
       email: "",
       phone: "",
       recipeCount: "",
     });
-    setUser(null);
   };
 
   const handleChange = (e) => {

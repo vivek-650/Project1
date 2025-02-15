@@ -32,16 +32,22 @@ export const Users = () => {
     <div>
       <h1>All Users</h1>
       <hr />
-      {users.map((item) => (
-        <div key={item.id}>
-          <h3>Name: {item.name}</h3>
-          <p>Email: {item.email}</p>
-          <p>Phone: {item.phone}</p>
-          <p>Recepie Count: {item.recipeCount}</p>
-          <p>Status: {item.isActive ? "Active" : "Blocked"}</p>
-          <hr />
+      {users == [] ? (
+        <div>
+          <p>No Users Present</p>
         </div>
-      ))}
+      ) : (
+        users.map((item) => (
+          <div key={item.id}>
+            <h3>Name: {item.name}</h3>
+            <p>Email: {item.email}</p>
+            <p>Phone: {item.phone}</p>
+            <p>Recepie Count: {item.recipeCount}</p>
+            <p>Status: {item.isActive ? "Active" : "Blocked"}</p>
+            <hr />
+          </div>
+        ))
+      )}
     </div>
   );
 };
