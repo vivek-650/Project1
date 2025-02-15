@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export const Users = () => {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getUsers = async () => {
     try {
@@ -11,16 +12,16 @@ export const Users = () => {
           method: "GET",
         }
       );
-      // console.log("Response: ", response);
       if (response.ok) {
         const data = await response.json();
-        // console.log("Data: ", data);
         setUsers(data);
       } else {
         console.log("Error in get Users");
       }
     } catch (error) {
       console.log("Error during get Users: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,7 +33,9 @@ export const Users = () => {
     <div>
       <h1>All Users</h1>
       <hr />
-      {users.length === 0 ? (
+      {loading ? (
+        <div>Loading...</div>
+      ) : users.length === 0 ? (
         <div>
           <p>No Users Present</p>
         </div>
@@ -42,7 +45,7 @@ export const Users = () => {
             <h3>Name: {item.name}</h3>
             <p>Email: {item.email}</p>
             <p>Phone: {item.phone}</p>
-            <p>Recepie Count: {item.recipeCount}</p>
+            <p>Recipe Count: {item.recipeCount}</p>
             <p>Status: {item.isActive ? "Active" : "Blocked"}</p>
             <hr />
           </div>
