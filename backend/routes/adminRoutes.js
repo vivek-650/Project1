@@ -61,6 +61,7 @@ router.post("/create-users", async (req, res) => {
 router.post("/block-user", async (req, res) => {
   try {
     const { email } = req.body;
+    console.log("Email to block: ", email);
     const userRef = db.collection("users").doc(email);
     await userRef.update({ isActive: false });
     res.json({ message: "User blocked successfully" });

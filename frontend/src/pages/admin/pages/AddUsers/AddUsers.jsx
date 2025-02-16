@@ -159,10 +159,14 @@ export const AddUsers = () => {
           </button>
         </form>
       </div>
+      <br />
+      <hr />
+      <br />
       <div>
         <h3>Upload excel sheet of all users to create</h3>
         <input type="file" onChange={handleFileUpload} />
       </div>
+      <br />
       <div>
         <h2>Users in File</h2>
         {users && (
