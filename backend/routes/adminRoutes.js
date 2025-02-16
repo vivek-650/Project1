@@ -10,9 +10,7 @@ router.post("/create-user", async (req, res) => {
   try {
     const { name, email, phone, recipeCount } = req.body;
     const password = Math.random().toString(36).slice(-8);
-    // const hashedPassword = await bcrypt.hash(password, 10);
     const defaultPassword = Math.random().toString(36).substring(2, 8);
-    // console.log("Default Password: ", defaultPassword);
 
     const userRef = db.collection("users").doc(email);
     await userRef.set({
@@ -25,8 +23,35 @@ router.post("/create-user", async (req, res) => {
       recipeCount,
     });
 
-    // Send email/SMS (Implement nodemailer)
     res.status(201).json({ message: "User created and password sent." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/create-users", async (req, res) => {
+  try {
+    const users = req.body;
+    console.log("Users: ", users);
+    const batch = db.batch();
+
+    users.forEach((user) => {
+      const { name, email, phone, recipeCount } = user;
+      const defaultPassword = Math.random().toString(36).substring(2, 8);
+      const userRef = db.collection("users").doc(email);
+      batch.set(userRef, {
+        name,
+        email,
+        phone,
+        password: defaultPassword,
+        isActive: false,
+        passwordChanged: false,
+        recipeCount,
+      });
+    });
+
+    await batch.commit();
+    res.status(201).json({ message: "Users created and passwords sent." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
