@@ -10,15 +10,18 @@ router.post("/create-user", async (req, res) => {
   try {
     const { name, email, phone, recipeCount } = req.body;
     const password = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
+    const defaultPassword = Math.random().toString(36).substring(2, 8);
+    // console.log("Default Password: ", defaultPassword);
 
     const userRef = db.collection("users").doc(email);
     await userRef.set({
       name,
       email,
       phone,
-      password: hashedPassword,
+      password: defaultPassword,
       isActive: false,
+      passwordChanged: false,
       recipeCount,
     });
 

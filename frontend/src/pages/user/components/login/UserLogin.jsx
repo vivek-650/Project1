@@ -1,16 +1,69 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { replace, useNavigate } from "react-router-dom";
 
 const UserLogin = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [error, setError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [newPasswordError, setNewPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const login = async () => {
+    setLoading(true);
+    try {
+      const loginData = { name: name, password: password };
+      // console.log("Login Params: ", name, " ", password);
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/user/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
+      console.log("User Login api response: ", response);
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("User login api data: ", data);
+
+        //check passwordChanged logic
+        if (response.status === 203) {
+          setShowPopup(true);
+          setLoading(false);
+          return;
+        }
+
+        if (response.status === 201) {
+          setError(data.message);
+          setLoading(false);
+          return;
+        }
+
+        sessionStorage.setItem("userToken", data.data.token);
+        navigate("/user/dashboard");
+
+        setLoading(false);
+      } else {
+        setError(data.message);
+        console.log("User login api error: ", data);
+        setLoading(false);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.log("User Login API Error: ", error);
+      setLoading(false);
+    }
+  };
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -20,15 +73,15 @@ const UserLogin = () => {
     e.preventDefault();
     let isValid = true;
 
-    if (!email) {
-      setEmailError("Email is required");
-      isValid = false;
-    } else if (!validateEmail(email)) {
-      setEmailError("Invalid email format");
-      isValid = false;
-    } else {
-      setEmailError("");
-    }
+    // if (!email) {
+    //   setEmailError("Email is required");
+    //   isValid = false;
+    // } else if (!validateEmail(email)) {
+    //   setEmailError("Invalid email format");
+    //   isValid = false;
+    // } else {
+    //   setEmailError("");
+    // }
 
     if (!password) {
       setPasswordError("Password is required");
@@ -38,8 +91,46 @@ const UserLogin = () => {
     }
 
     if (isValid) {
-      setShowPopup(true);
+      //login
+      setError("");
+      login();
+      // setShowPopup(true);
     }
+  };
+
+  //change password api
+  const changePassword = async () => {
+    setLoading(true);
+    try {
+      const userData = { name: name, newPassword: newPassword };
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/user/change-password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userData),
+        }
+      );
+      // console.log("Response of user change password api: ", response);
+
+      const data = await response.json();
+      if (response.ok) {
+        alert(
+          "Password changes successfully , now try loggin in with new password"
+        );
+        navigate("/user");
+      } else {
+        console.log(
+          "Error in user change password api response: ",
+          data.message
+        );
+      }
+    } catch (error) {
+      console.log("Error in user change password api: ", error);
+    }
+    setLoading(false);
   };
 
   const handlePasswordChange = () => {
@@ -56,10 +147,11 @@ const UserLogin = () => {
     }
 
     if (isValid) {
-      sessionStorage.setItem("userToken", "UserToken001")
+      // sessionStorage.setItem("userToken", "UserToken001");
+      changePassword();
+      setName("");
+      setPassword("");
       setShowPopup(false);
-      alert("Password successfully updated!");
-      navigate("/user/dashboard");
     }
   };
 
@@ -76,8 +168,11 @@ const UserLogin = () => {
       </div>
 
       <form id="loginForm" style={styles.loginForm} onSubmit={handleVerify}>
+        {error && (
+          <div style={{ ...styles.error, textAlign: "center" }}>{error}</div>
+        )}
         <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>
+          {/* <label htmlFor="email" style={styles.label}>
             Email
           </label>
           <input
@@ -89,7 +184,19 @@ const UserLogin = () => {
             onChange={(e) => setEmail(e.target.value)}
             style={styles.input}
           />
-          {emailError && <div style={styles.error}>{emailError}</div>}
+          {emailError && <div style={styles.error}>{emailError}</div>} */}
+          <label htmlFor="email" style={styles.label}>
+            Name
+          </label>
+          <input
+            type="name"
+            id="name"
+            placeholder="Enter username provided by admin"
+            // autoComplete="email"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={styles.input}
+          />
         </div>
 
         <div style={styles.formGroup}>
@@ -109,7 +216,7 @@ const UserLogin = () => {
         </div>
 
         <button type="submit" style={styles.loginBtn}>
-          Verify
+          {loading ? "Loading..." : "Verify"}
         </button>
       </form>
 
