@@ -142,7 +142,7 @@ router.get("/user-details/:email", async (req, res) => {
   }
 });
 
-// 4. Forgot Password 
+// 4. Forgot Password
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email, name } = req.body;
