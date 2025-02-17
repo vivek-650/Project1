@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { replace, useNavigate } from "react-router-dom";
+import {  useState } from "react";
+import {  useNavigate } from "react-router-dom";
 
 const UserLogin = () => {
   const [showPopup, setShowPopup] = useState(false);
-  const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
+  // const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [newPasswordError, setNewPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -65,9 +65,9 @@ const UserLogin = () => {
     }
   };
 
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  // const validateEmail = (email) => {
+  //   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  // };
 
   const handleVerify = (e) => {
     e.preventDefault();
@@ -215,6 +215,12 @@ const UserLogin = () => {
           {passwordError && <div style={styles.error}>{passwordError}</div>}
         </div>
 
+        <div style={styles.rememberForgot}>
+          <a href="#" className="forgot-password">
+            Forgot password?
+          </a>
+        </div>
+
         <button type="submit" style={styles.loginBtn}>
           {loading ? "Loading..." : "Verify"}
         </button>
@@ -299,6 +305,13 @@ const styles = {
   },
   label: { fontSize: "1.05rem" },
   error: { color: "red", fontSize: "0.875rem", marginTop: "0.5rem" },
+  rememberForgot: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "1rem",
+    width: "100%",
+  },
   loginBtn: {
     width: "100%",
     padding: "0.75rem",
