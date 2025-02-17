@@ -29,6 +29,11 @@ export const Layout = () => {
       name: "Add new recepie",
       link: "/user/new-recepie",
     },
+    {
+      id: "5",
+      name: "User account setting",
+      link: "/user/user-setting",
+    },
   ];
 
   const styles = {
