@@ -1,25 +1,24 @@
-import {  useState } from "react";
-import {  useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const UserLogin = () => {
   const [showPopup, setShowPopup] = useState(false);
-  // const [email, setEmail] = useState("");
+  const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  // const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [newPasswordError, setNewPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const navigate = useNavigate();
 
   const login = async () => {
     setLoading(true);
     try {
       const loginData = { name: name, password: password };
-      // console.log("Login Params: ", name, " ", password);
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/user/login`,
         {
@@ -30,13 +29,9 @@ const UserLogin = () => {
           body: JSON.stringify(loginData),
         }
       );
-      // console.log("User Login api response: ", response);
 
       const data = await response.json();
       if (response.ok) {
-        console.log("User login api data: ", data);
-
-        //check passwordChanged logic
         if (response.status === 203) {
           setShowPopup(true);
           setLoading(false);
@@ -52,39 +47,22 @@ const UserLogin = () => {
         sessionStorage.setItem("userToken", data.data.token);
         sessionStorage.setItem("recipeCount", data.data.recipeCount);
         sessionStorage.setItem("email", data.data.email);
-        // sessionStorage.setItem("userToken", data.data.token);
         navigate("/user/dashboard");
 
         setLoading(false);
       } else {
         setError(data.message);
-        console.log("User login api error: ", data);
         setLoading(false);
       }
     } catch (error) {
       setError(error.message);
-      console.log("User Login API Error: ", error);
       setLoading(false);
     }
   };
 
-  // const validateEmail = (email) => {
-  //   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  // };
-
   const handleVerify = (e) => {
     e.preventDefault();
     let isValid = true;
-
-    // if (!email) {
-    //   setEmailError("Email is required");
-    //   isValid = false;
-    // } else if (!validateEmail(email)) {
-    //   setEmailError("Invalid email format");
-    //   isValid = false;
-    // } else {
-    //   setEmailError("");
-    // }
 
     if (!password) {
       setPasswordError("Password is required");
@@ -94,14 +72,11 @@ const UserLogin = () => {
     }
 
     if (isValid) {
-      //login
       setError("");
       login();
-      // setShowPopup(true);
     }
   };
 
-  //change password api
   const changePassword = async () => {
     setLoading(true);
     try {
@@ -116,12 +91,11 @@ const UserLogin = () => {
           body: JSON.stringify(userData),
         }
       );
-      // console.log("Response of user change password api: ", response);
 
       const data = await response.json();
       if (response.ok) {
         alert(
-          "Password changes successfully , now try loggin in with new password"
+          "Password changes successfully , now try logging in with new password"
         );
         navigate("/user");
       } else {
@@ -150,29 +124,31 @@ const UserLogin = () => {
     }
 
     if (isValid) {
-      // sessionStorage.setItem("userToken", "UserToken001");
       changePassword();
       setName("");
       setPassword("");
       setShowPopup(false);
     }
   };
-  const handleForgotPassword = async (name) => {
+
+  const handleForgotPassword = async (email) => {
     try {
       const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
-      });
-  
+        `${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
       const data = await response.json();
-  
+
       if (response.ok) {
         alert("Password reset request sent successfully.");
+        setShowForgotPasswordPopup(false);
       } else {
         alert(data.message || "Something went wrong. Please try again.");
       }
@@ -181,7 +157,7 @@ const UserLogin = () => {
       alert("An error occurred while sending the request.");
     }
   };
-  
+
   return (
     <div style={styles.loginCard}>
       <div style={styles.brand}>
@@ -199,19 +175,6 @@ const UserLogin = () => {
           <div style={{ ...styles.error, textAlign: "center" }}>{error}</div>
         )}
         <div style={styles.formGroup}>
-          {/* <label htmlFor="email" style={styles.label}>
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Enter username provided by admin"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-          />
-          {emailError && <div style={styles.error}>{emailError}</div>} */}
           <label htmlFor="email" style={styles.label}>
             Name
           </label>
@@ -219,7 +182,6 @@ const UserLogin = () => {
             type="name"
             id="name"
             placeholder="Enter username provided by admin"
-            // autoComplete="email"
             value={name}
             onChange={(e) => setName(e.target.value)}
             style={styles.input}
@@ -243,7 +205,10 @@ const UserLogin = () => {
         </div>
 
         <div style={styles.rememberForgot}>
-          <p onClick={() => handleForgotPassword(name)} className="forgot-password">
+          <p
+            onClick={() => setShowForgotPasswordPopup(true)}
+            className="forgot-password"
+          >
             Forgot password?
           </p>
         </div>
@@ -280,6 +245,29 @@ const UserLogin = () => {
             )}
             <button onClick={handlePasswordChange} style={styles.loginBtn}>
               Submit
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showForgotPasswordPopup && (
+        <div style={styles.popupOverlay}>
+          <div style={styles.popup}>
+            <h2>Forgot Password</h2>
+            <div style={styles.formGroup}>
+              <label style={styles.ForgotLabel}>Enter company email for verification and request admin to grant permission </label>
+              <input
+                type="email"
+                value={forgotPasswordEmail}
+                onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <button
+              onClick={() => handleForgotPassword(forgotPasswordEmail)}
+              style={{ ...styles.loginBtn, width: "80%" }}
+            >
+              Request
             </button>
           </div>
         </div>
@@ -367,8 +355,18 @@ const styles = {
     padding: "2rem",
     borderRadius: "8px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-    width: "300px",
+    width: "25%",
+    height: "50%",
     textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "3rem",
+    // justifyContent: "space-evenly",
+  },
+  ForgotLabel:{
+    fontSize: "1.07rem",
+    marginBottom: "1rem"
   },
 };
 
