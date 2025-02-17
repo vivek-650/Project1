@@ -142,11 +142,14 @@ router.get("/user-details/:email", async (req, res) => {
   }
 });
 
-// 4. Forgot Password 
+// 4. Forgot Password
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email, name } = req.body;
-    const userSnapshot = await db.collection("users").where("name", "==", name).get();
+    const userSnapshot = await db
+      .collection("users")
+      .where("name", "==", name)
+      .get();
 
     if (userSnapshot.empty) {
       return res.status(404).json({ message: "User not found." });
