@@ -60,34 +60,69 @@ export const Users = () => {
   const handleBlock = (email) => {
     blockUser(email);
   };
+  const styles = {
+    container: {
+      padding: '20px',
+      fontFamily: 'Arial, sans-serif',
+    },
+    header: {
+      textAlign: 'center',
+      color: '#333',
+    },
+    loading: {
+      textAlign: 'center',
+      fontSize: '18px',
+    },
+    noUsers: {
+      textAlign: 'center',
+      fontSize: '18px',
+      color: '#888',
+    },
+    userCard: {
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      padding: '10px',
+      margin: '10px 0',
+      backgroundColor: '',
+    },
+    blockButton: {
+      padding: '8px 12px',
+      backgroundColor: '#ff4d4d',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+    },
+  };
 
   return (
-    <div>
-      <h1>All Users</h1>
-      <hr />
+    <div style={styles.container}>
+      <h1 style={styles.header}>All Users</h1>
+      {/* <hr /> */}
       {loading ? (
-        <div>Loading...</div>
+        <div style={styles.loading}>Loading...</div>
       ) : users.length === 0 ? (
-        <div>
+        <div style={styles.noUsers}>
           <p>No Users Present</p>
         </div>
       ) : (
         users.map((item) => (
-          <div key={item.id}>
+          <div key={item.id} style={styles.userCard}>
             <h3>Name: {item.name}</h3>
             <p>Email: {item.email}</p>
             <p>Phone: {item.phone}</p>
             <p>Recipe Count: {item.recipeCount}</p>
             <p>Status: {item.isActive ? "Active" : "Inactive"}</p>
             {item.isActive && (
-              <button onClick={() => handleBlock(item.email)}>
+              <button style={styles.blockButton} onClick={() => handleBlock(item.email)}>
                 Block User
               </button>
             )}
-            <hr />
+            {/* <hr /> */}
           </div>
         ))
       )}
     </div>
   );
 };
+
