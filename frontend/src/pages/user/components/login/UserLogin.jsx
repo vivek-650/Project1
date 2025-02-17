@@ -30,7 +30,7 @@ const UserLogin = () => {
           body: JSON.stringify(loginData),
         }
       );
-      console.log("User Login api response: ", response);
+      // console.log("User Login api response: ", response);
 
       const data = await response.json();
       if (response.ok) {
@@ -50,6 +50,9 @@ const UserLogin = () => {
         }
 
         sessionStorage.setItem("userToken", data.data.token);
+        sessionStorage.setItem("recipeCount", data.data.recipeCount);
+        sessionStorage.setItem("email", data.data.email);
+        // sessionStorage.setItem("userToken", data.data.token);
         navigate("/user/dashboard");
 
         setLoading(false);

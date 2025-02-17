@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AddRecepies = () => {
   const [recpie, setRecpie] = useState({
@@ -8,10 +8,21 @@ const AddRecepies = () => {
     explanation: "",
   });
 
+  const recipeCount = sessionStorage.getItem("recipeCount");
+  // const email = sessionStorage.getItem("email");
+  const [recpies, setRecpies] = useState(
+    Array.from({ length: recipeCount }, () => ({
+      title: "",
+      ingredients: [],
+      instructions: "",
+      explanation: "",
+    }))
+  );
+
   const addRecpie = async () => {
     try {
-      const recpieData = { ...recpie, email: "user@example.com" };
-      // console.log("Recpie data: ", recpieData);
+      const recpieData = { ...recpies, email: "user@example.com" };
+      console.log("Recpie data: ", recpieData);
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/user/add-recipe`,
         {
@@ -46,61 +57,80 @@ const AddRecepies = () => {
   };
   return (
     <div>
-      <h1>Add Recpies</h1>
+      <h1>Add Recipes</h1>
       <hr />
       <div>
-        <form action="">
-          <label htmlFor="title">
-            Title:
-            <input
-              type="text"
-              name="title"
-              value={recpie.title}
-              onChange={(e) => setRecpie({ ...recpie, title: e.target.value })}
-            />
-          </label>
-          <br />
-          <label htmlFor="ingredients">
-            Ingredients:
-            <input
-              type="text"
-              name="ingredients"
-              value={recpie.ingredients.join(", ")}
-              onChange={(e) =>
-                setRecpie({
-                  ...recpie,
-                  ingredients: e.target.value.split(", "),
-                })
-              }
-            />
-          </label>
-          <br />
-          <label htmlFor="instructions">
-            Instructions:
-            <textarea
-              name="instructions"
-              value={recpie.instructions}
-              onChange={(e) =>
-                setRecpie({ ...recpie, instructions: e.target.value })
-              }
-            />
-          </label>
-          <br />
-          <label htmlFor="explanation">
-            Explanation:
-            <textarea
-              name="explanation"
-              value={recpie.explanation}
-              onChange={(e) =>
-                setRecpie({ ...recpie, explanation: e.target.value })
-              }
-            />
-          </label>
-          <br />
-          <button type="button" onClick={handleAddRecpie}>
-            Add Recpie
-          </button>
-        </form>
+        {recpies.map((item, index) => (
+          <form key={index} action="">
+            <label htmlFor={`title-${index}`}>
+              Title:
+              <input
+                type="text"
+                name={`title-${index}`}
+                value={item.title}
+                onChange={(e) =>
+                  setRecpies(
+                    recpies.map((rec, i) =>
+                      i === index ? { ...rec, title: e.target.value } : rec
+                    )
+                  )
+                }
+              />
+            </label>
+            <br />
+            <label htmlFor={`ingredients-${index}`}>
+              Ingredients:
+              <input
+                type="text"
+                name={`ingredients-${index}`}
+                value={item.ingredients.join(", ")}
+                onChange={(e) =>
+                  setRecpies(
+                    recpies.map((rec, i) =>
+                      i === index
+                        ? { ...rec, ingredients: e.target.value.split(", ") }
+                        : rec
+                    )
+                  )
+                }
+              />
+            </label>
+            <br />
+            <label htmlFor={`instructions-${index}`}>
+              Instructions:
+              <textarea
+                name={`instructions-${index}`}
+                value={item.instructions}
+                onChange={(e) =>
+                  setRecpies(
+                    recpies.map((rec, i) =>
+                      i === index ? { ...rec, instructions: e.target.value } : rec
+                    )
+                  )
+                }
+              />
+            </label>
+            <br />
+            <label htmlFor={`explanation-${index}`}>
+              Explanation:
+              <textarea
+                name={`explanation-${index}`}
+                value={item.explanation}
+                onChange={(e) =>
+                  setRecpies(
+                    recpies.map((rec, i) =>
+                      i === index ? { ...rec, explanation: e.target.value } : rec
+                    )
+                  )
+                }
+              />
+            </label>
+            <br />
+          </form>
+        ))}
+        <button type="button" onClick={handleAddRecpie}>
+          Add Recipe
+        </button>
       </div>
     </div>
   );

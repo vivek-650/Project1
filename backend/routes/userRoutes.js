@@ -28,13 +28,18 @@ router.post("/login", async (req, res) => {
     if (user.passwordChanged) {
       if (user.isActive) {
         return res.status(200).json({
-          data: { token: "userToken000" },
+          data: {
+            name: user.name,
+            email: user.email,
+            recipeCount: user.recipeCount,
+            token: "userToken000",
+          },
           message: "User logged in sucessfully",
         });
       } else {
-        return res
-          .status(201)
-          .json({ message: "Your account is not active please contact your admin" });
+        return res.status(201).json({
+          message: "Your account is not active please contact your admin",
+        });
       }
     } else {
       return res.status(203).json({ message: "Change password" });
@@ -78,17 +83,29 @@ router.post("/change-password", async (req, res) => {
 // 1. Add Recipe
 router.post("/add-recipe", async (req, res) => {
   try {
-    const { email, title, ingredients, instructions, explanation } = req.body;
-    const recipeRef = db.collection("recipes").doc();
-    await recipeRef.set({
-      email,
-      title,
-      ingredients,
-      instructions,
-      explanation,
+    const { email, recipes } = req.body;
+
+    if (!Array.isArray(recipes)) {
+      return res.status(400).json({ message: "Recipes should be an array" });
+    }
+
+    const batch = db.batch();
+
+    recipes.forEach((recipe) => {
+      const { title, ingredients, instructions, explanation } = recipe;
+      const recipeRef = db.collection("recipes").doc();
+      batch.set(recipeRef, {
+        email,
+        title,
+        ingredients,
+        instructions,
+        explanation,
+      });
     });
 
-    res.json({ message: "Recipe added successfully" });
+    await batch.commit();
+
+    res.json({ message: "Recipes added successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -103,8 +120,8 @@ router.get("/recipes/:email", async (req, res) => {
       .where("email", "==", email)
       .get();
     const recipes = recipesSnapshot.docs.map((doc) => doc.data());
-    console.log(recipes);
-    res.json(recipes);
+    console.log(recipes[0].recipes);
+    res.json(recipes[0].recipes);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
