@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import * as XLSX from "xlsx";
 
 export const AddUsers = () => {
@@ -108,13 +108,76 @@ export const AddUsers = () => {
 
     reader.readAsArrayBuffer(file);
   };
+  const styles = {
+    container: {
+      padding: "20px",
+      fontFamily: "'Arial', sans-serif",
+    },
+    header: {
+      textAlign: "center",
+      color: "#333",
+    },
+    formContainer: {
+      marginBottom: "20px",
+    },
+    form: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "10px",
+    },
+    label: {
+      display: "flex",
+      flexDirection: "column",
+      fontSize: "16px",
+      color: "#555",
+    },
+    input: {
+      padding: "8px",
+      fontSize: "14px",
+      borderRadius: "4px",
+      border: "1px solid #ccc",
+      marginTop: "5px",
+    },
+    button: {
+      padding: "10px 15px",
+      fontSize: "16px",
+      color: "#fff",
+      backgroundColor: "black",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+      marginTop: "10px",
+    },
+    uploadContainer: {
+      marginBottom: "20px",
+    },
+    fileInput: {
+      padding: "10px",
+      fontSize: "14px",
+    },
+    table: {
+      width: "100%",
+      borderCollapse: "collapse",
+      marginTop: "20px",
+    },
+    tableHeader: {
+      borderBottom: "2px solid #ddd",
+      padding: "10px",
+      textAlign: "left",
+      backgroundColor: "#f2f2f2",
+    },
+    tableCell: {
+      borderBottom: "1px solid #ddd",
+      padding: "10px",
+    },
+  };
 
   return (
-    <div>
-      <h1>Add Users</h1>
-      <div>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <label>
+    <div style={styles.container}>
+      <h1 style={styles.header}>Add Users</h1>
+      <div style={styles.formContainer}>
+        <form onSubmit={(e) => e.preventDefault()} style={styles.form}>
+          <label style={styles.label}>
             User Name:
             <input
               type="text"
@@ -122,9 +185,10 @@ export const AddUsers = () => {
               value={user.name}
               onChange={handleChange}
               placeholder="Enter User Name"
+              style={styles.input}
             />
           </label>
-          <label>
+          <label style={styles.label}>
             Email:
             <input
               type="text"
@@ -132,9 +196,10 @@ export const AddUsers = () => {
               value={user.email}
               onChange={handleChange}
               placeholder="Enter User Email"
+              style={styles.input}
             />
           </label>
-          <label>
+          <label style={styles.label}>
             Phone:
             <input
               type="text"
@@ -142,9 +207,10 @@ export const AddUsers = () => {
               value={user.phone}
               onChange={handleChange}
               placeholder="Enter User Number"
+              style={styles.input}
             />
           </label>
-          <label>
+          <label style={styles.label}>
             Recipe Count:
             <input
               type="text"
@@ -152,9 +218,10 @@ export const AddUsers = () => {
               value={user.recipeCount}
               onChange={handleChange}
               placeholder="Enter Recipe Count"
+              style={styles.input}
             />
           </label>
-          <button type="button" onClick={handleAddUser}>
+          <button type="button" onClick={handleAddUser} style={styles.button}>
             Add
           </button>
         </form>
@@ -162,37 +229,41 @@ export const AddUsers = () => {
       <br />
       <hr />
       <br />
-      <div>
+      <div style={styles.uploadContainer}>
         <h3>Upload excel sheet of all users to create</h3>
-        <input type="file" onChange={handleFileUpload} />
+        <input type="file" onChange={handleFileUpload} style={styles.fileInput} />
       </div>
       <br />
       <div>
         <h2>Users in File</h2>
         {users && (
-          <table>
+          <table style={styles.table}>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone No</th>
-                <th>Count</th>
+                <th style={styles.tableHeader}>Name</th>
+                <th style={styles.tableHeader}>Email</th>
+                <th style={styles.tableHeader}>Phone No</th>
+                <th style={styles.tableHeader}>Count</th>
               </tr>
             </thead>
             <tbody>
               {users.map((item, index) => (
                 <tr key={index}>
-                  <td>{item.name}</td>
-                  <td>{item.email}</td>
-                  <td>{item.phone}</td>
-                  <td style={{ textAlign: "center" }}>{item.recipeCount}</td>
+                  <td style={styles.tableCell}>{item.name}</td>
+                  <td style={styles.tableCell}>{item.email}</td>
+                  <td style={styles.tableCell}>{item.phone}</td>
+                  <td style={{ ...styles.tableCell, textAlign: "center" }}>{item.recipeCount}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
-        <button onClick={handleCreateMultipleUser}>Create Users</button>
+        <button onClick={handleCreateMultipleUser} style={styles.button}>
+          Create Users
+        </button>
       </div>
     </div>
   );
+
+
 };
