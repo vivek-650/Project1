@@ -157,7 +157,31 @@ const UserLogin = () => {
       setShowPopup(false);
     }
   };
-
+  const handleForgotPassword = async (name) => {
+    try {
+      const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert("Password reset request sent successfully.");
+      } else {
+        alert(data.message || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred while sending the request.");
+    }
+  };
+  
   return (
     <div style={styles.loginCard}>
       <div style={styles.brand}>
@@ -219,9 +243,9 @@ const UserLogin = () => {
         </div>
 
         <div style={styles.rememberForgot}>
-          <a href="#" className="forgot-password">
+          <p onClick={() => handleForgotPassword(name)} className="forgot-password">
             Forgot password?
-          </a>
+          </p>
         </div>
 
         <button type="submit" style={styles.loginBtn}>
@@ -314,6 +338,8 @@ const styles = {
     alignItems: "center",
     marginBottom: "1rem",
     width: "100%",
+    color: "blue",
+    cursor: "pointer",
   },
   loginBtn: {
     width: "100%",
