@@ -201,7 +201,7 @@ const UserLogin = () => {
 
         <div style={styles.formGroup}>
           <label htmlFor="password" style={styles.label}>
-            Default Password
+            Password
           </label>
           <input
             type="password"
