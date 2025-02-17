@@ -109,7 +109,7 @@ router.get("/recipes/:email", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-// 3. get users details  
+// 3. get users details
 router.get("/user-details/:email", async (req, res) => {
   try {
     const { email } = req.params;
@@ -120,6 +120,29 @@ router.get("/user-details/:email", async (req, res) => {
     const userDetails = recipesSnapshot.docs.map((doc) => doc.data());
     console.log(userDetails);
     res.json(userDetails);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 4. Forgot Password 
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const userSnapshot = await db.collection("users").where("email", "==", email).get();
+
+    if (userSnapshot.empty) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Store reset request
+    await db.collection("password_reset_requests").add({
+      email,
+      status: "pending",
+      requestedAt: new Date(),
+    });
+
+    res.json({ message: "Password reset request sent to admin." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
