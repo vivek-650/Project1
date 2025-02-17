@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 const Recepies = () => {
   const [recpies, setRecpies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const email = sessionStorage.getItem("email");
 
   const getRecpies = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/recipes/user@example.com`,
+        `${import.meta.env.VITE_BASE_URL}/api/user/recipes/${email}`,
         {
           method: "GET",
         }
