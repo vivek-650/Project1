@@ -126,5 +126,20 @@ router.get("/recipes/:email", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// 3. get users details  
+router.get("/user-details/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+    const recipesSnapshot = await db
+      .collection("users")
+      .where("email", "==", email)
+      .get();
+    const userDetails = recipesSnapshot.docs.map((doc) => doc.data());
+    console.log(userDetails);
+    res.json(userDetails);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 export default router;

@@ -55,6 +55,59 @@ const AddRecepies = () => {
       explanation: "",
     });
   };
+
+  const styles = {
+    container: {
+      width: "95%",
+      height: "10vh",
+      margin: "0 auto",
+      padding: "20px",
+      fontFamily: "Arial, sans-serif",
+    },
+    header: {
+      textAlign: "center",
+      color: "#333",
+    },
+    formContainer: {
+      // backgroundColor: "red",
+      padding: "40px",
+      borderRadius: "8px",
+      // boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+    },
+    form: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    label: {
+      marginBottom: "0px",
+      color: "#555",
+    },
+    input: {
+      padding: "10px",
+      borderRadius: "4px",
+      border: "1px solid #ccc",
+      marginBottom: "0px",
+      width: "100%",
+    },
+    textarea: {
+      padding: "10px",
+      borderRadius: "4px",
+      border: "1px solid #ccc",
+      marginBottom: "0px",
+      width: "100%",
+      height: "100px",
+    },
+    button: {
+      padding: "10px 20px",
+      borderRadius: "4px",
+      border: "none",
+      backgroundColor: "#28a745",
+      color: "#fff",
+      cursor: "pointer",
+      alignSelf: "center",
+    },
+  };
+
   return (
     <div>
       <h1>Add Recipes</h1>
@@ -134,6 +187,8 @@ const AddRecepies = () => {
       </div>
     </div>
   );
+
+
 };
 
 export default AddRecepies;
