@@ -136,7 +136,7 @@ router.post("/forgot-password", async (req, res) => {
     }
 
     // Store reset request
-    await db.collection("password_reset_requests").add({
+    await db.collection("requests").add({
       email,
       status: "pending",
       requestedAt: new Date(),
