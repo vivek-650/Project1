@@ -148,11 +148,11 @@ const AdminLogin = () => {
           {passwordError && <div style={styles.error}>{passwordError}</div>}
         </div>
 
-        <div style={styles.rememberForgot}>
+        {/* <div style={styles.rememberForgot}>
           <a href="#" className="forgot-password">
             Forgot password?
           </a>
-        </div>
+        </div> */}
 
         <button type="submit" style={styles.loginBtn} id="loginButton">
           Sign in
