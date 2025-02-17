@@ -132,7 +132,7 @@ router.post("/forgot-password", async (req, res) => {
     const userSnapshot = await db.collection("users").where("email", "==", email).get();
 
     if (userSnapshot.empty) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found." });
     }
 
     // Store reset request
