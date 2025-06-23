@@ -12,27 +12,27 @@ export const Layout = () => {
     {
       id: "1",
       name: "All Recepies",
-      link: "/user/recepies",
+      link: "recepies",
     },
     {
       id: "2",
       name: "Drafts",
-      link: "/user/drafts",
+      link: "drafts",
     },
     {
       id: "3",
       name: "uploaded",
-      link: "/user/uploaded",
+      link: "uploaded",
     },
     {
       id: "4",
       name: "Add new recepie",
-      link: "/user/new-recepie",
+      link: "new-recepie",
     },
     {
       id: "5",
       name: "User account setting",
-      link: "/user/user-setting",
+      link: "user-setting",
     },
   ];
 
@@ -62,7 +62,7 @@ export const Layout = () => {
 
   const handleMenuClick = (menu) => {
     setActiveTab(menu.name);
-    navigate(menu.link);
+    navigate(`/student/dashboard/${menu.link}`);
   };
 
   const handleLogout = () => {

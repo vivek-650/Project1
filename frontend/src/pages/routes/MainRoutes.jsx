@@ -1,22 +1,23 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-// import UserLogin from "../user/components/login/UserLogin";
 import AdminLogin from "../admin/components/login/AdminLogin";
+import TeacherLogin from "../teacher/components/login/TeacherLogin";
+import StudentLogin from "../student/components/login/StudentLogin";
 import MainPage from "../main/MainPage";
 import StudentRoutes from "./StudentRoutes";
 import TeacherRoutes from "./TeacherRoutes";
-import StudentHome from "../user/pages/landingPage/StudentHome";
-import TeacherHome from "../admin/pages/landingPage/TeacherHome";
+import StudentHome from "../student/pages/landingPage/StudentHome";
+import TeacherHome from "../teacher/pages/landingPage/TeacherHome";
 
 const MainRoutes = () => {
   const TeacherPrivateRoute = ({ children }) => {
     const teacherToken = sessionStorage.getItem("teacherToken");
     // const teacherToken = true;
-    return teacherToken ? children : <Navigate to="/teacher" replace />;
+    return teacherToken ? children : <Navigate to="/teacher/login" replace />;
   };
   const StudentPrivateRoute = ({ children }) => {
     const studentToken = sessionStorage.getItem("studentToken");
     // const studentToken = true;
-    return studentToken ? children : <Navigate to="/student" replace />;
+    return studentToken ? children : <Navigate to="/student/login" replace />;
   };
   const OpenRoutes = ({ children }) => {
     const studentToken = sessionStorage.getItem("studentToken");
@@ -37,22 +38,46 @@ const MainRoutes = () => {
         element={
           <OpenRoutes>
             <TeacherHome />
-            {/* <AdminLogin /> */}
           </OpenRoutes>
         }
       ></Route>
+      <Route
+        path="/teacher/login"
+        element={
+          <OpenRoutes>
+            <TeacherLogin />
+          </OpenRoutes>
+        }
+      />
+
       <Route
         path="/student"
         element={
           <OpenRoutes>
             <StudentHome />
-            {/* <UserLogin /> */}
           </OpenRoutes>
         }
       ></Route>
+      <Route
+        path="/student/login"
+        element={
+          <OpenRoutes>
+            <StudentLogin />
+          </OpenRoutes>
+        }
+      />
 
       <Route
-        path="/teacher/*"
+        path="/admin"
+        element={
+          <OpenRoutes>
+            <AdminLogin />
+          </OpenRoutes>
+        }
+      />
+
+      <Route
+        path="/teacher/dashboard/*"
         element={
           <TeacherPrivateRoute>
             <TeacherRoutes />
@@ -61,7 +86,7 @@ const MainRoutes = () => {
       />
 
       <Route
-        path="/student/*"
+        path="/student/dashboard/*"
         element={
           <StudentPrivateRoute>
             <StudentRoutes />

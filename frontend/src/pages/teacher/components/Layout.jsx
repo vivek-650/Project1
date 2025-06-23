@@ -11,17 +11,17 @@ export const Layout = () => {
     {
       id: "1",
       name: "All Users",
-      link: "/admin/users",
+      link: "/teacher/dashboard/users",
     },
     {
       id: "2",
       name: "Add users",
-      link: "/admin/add-users",
+      link: "/teacher/dashboard/add-users",
     },
     {
       id: "3",
       name: "Requests",
-      link: "/admin/requests",
+      link: "/teacher/dashboard/requests",
     },
   ];
 
@@ -55,13 +55,13 @@ export const Layout = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.clear("adminToken");
-    navigate("/admin");
+    sessionStorage.clear("teacherToken");
+    navigate("/");
   };
 
   return (
     <div style={styles.main}>
-      <Navbar userName={"TestAdmin"} onLogout={handleLogout} />
+      <Navbar userName={"Test Teacher"} onLogout={handleLogout} />
       <div style={styles.leftMenu}>
         {menuItems.map((item) => (
           <div
