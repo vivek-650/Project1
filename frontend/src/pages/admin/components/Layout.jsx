@@ -16,7 +16,7 @@ export const Layout = () => {
     {
       id: "2",
       name: "All Notices",
-      link: "students",
+      link: "notices",
     },
   ];
 
@@ -46,7 +46,7 @@ export const Layout = () => {
 
   const handleMenuClick = (menu) => {
     setActiveTab(menu.name);
-    navigate(`admin/dashboard/${menu.link}`);
+    navigate(`/admin/dashboard/${menu.link}`);
   };
 
   const handleLogout = () => {
