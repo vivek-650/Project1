@@ -5,10 +5,16 @@ import StudentLogin from "../student/components/login/StudentLogin";
 import MainPage from "../main/MainPage";
 import StudentRoutes from "./StudentRoutes";
 import TeacherRoutes from "./TeacherRoutes";
+import AdminRoutes from "./AdminRoutes";
 import StudentHome from "../student/pages/landingPage/StudentHome";
 import TeacherHome from "../teacher/pages/landingPage/TeacherHome";
 
 const MainRoutes = () => {
+  const AdminPrivateRoute = ({ children }) => {
+    const adminToken = sessionStorage.getItem("adminToken");
+    // const adminToken = true;
+    return adminToken ? children : <Navigate to="/admin" replace />;
+  };
   const TeacherPrivateRoute = ({ children }) => {
     const teacherToken = sessionStorage.getItem("teacherToken");
     // const teacherToken = true;
@@ -22,10 +28,13 @@ const MainRoutes = () => {
   const OpenRoutes = ({ children }) => {
     const studentToken = sessionStorage.getItem("studentToken");
     const teacherToken = sessionStorage.getItem("teacherToken");
+    const adminToken = sessionStorage.getItem("adminToken");
     return teacherToken ? (
       <Navigate to="/teacher/dashboard" replace />
     ) : studentToken ? (
       <Navigate to="/student/dashboard" replace />
+    ) : adminToken ? (
+      <Navigate to="/admin/dashboard" replace />
     ) : (
       children
     );
@@ -73,6 +82,15 @@ const MainRoutes = () => {
           <OpenRoutes>
             <AdminLogin />
           </OpenRoutes>
+        }
+      />
+
+      <Route
+        path="/admin/dashboard/*"
+        element={
+          <AdminPrivateRoute>
+            <AdminRoutes />
+          </AdminPrivateRoute>
         }
       />
 
