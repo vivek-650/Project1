@@ -10,13 +10,18 @@ export const Layout = () => {
   const menuItems = [
     {
       id: "1",
-      name: "All Teachers",
-      link: "teachers",
+      name: "All Users",
+      link: "/teacher/dashboard/users",
     },
     {
       id: "2",
-      name: "All Notices",
-      link: "notices",
+      name: "Add users",
+      link: "/teacher/dashboard/add-users",
+    },
+    {
+      id: "3",
+      name: "Requests",
+      link: "/teacher/dashboard/requests",
     },
   ];
 
@@ -46,17 +51,17 @@ export const Layout = () => {
 
   const handleMenuClick = (menu) => {
     setActiveTab(menu.name);
-    navigate(`/admin/dashboard/${menu.link}`);
+    navigate(menu.link);
   };
 
   const handleLogout = () => {
-    sessionStorage.clear("adminToken");
+    sessionStorage.clear("teacherToken");
     navigate("/");
   };
 
   return (
     <div style={styles.main}>
-      <Navbar userName={"Test Admin"} onLogout={handleLogout} />
+      <Navbar userName={"Test Teacher"} onLogout={handleLogout} />
       <div style={styles.leftMenu}>
         {menuItems.map((item) => (
           <div
