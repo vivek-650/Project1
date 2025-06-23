@@ -1,27 +1,30 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import UserLogin from "../user/components/login/UserLogin";
+// import UserLogin from "../user/components/login/UserLogin";
 import AdminLogin from "../admin/components/login/AdminLogin";
-import AdminRoutes from "./AdminRoutes";
-import UserRoutes from "./UserRoutes";
 import MainPage from "../main/MainPage";
+import StudentRoutes from "./StudentRoutes";
+import TeacherRoutes from "./TeacherRoutes";
+import StudentHome from "../user/pages/landingPage/StudentHome";
+import TeacherHome from "../admin/pages/landingPage/TeacherHome";
+
 const MainRoutes = () => {
-  const AdminPrivateRoute = ({ children }) => {
-    const adminToken = sessionStorage.getItem("adminToken");
-    // const adminToken = true;
-    return adminToken ? children : <Navigate to="/admin" replace />;
+  const TeacherPrivateRoute = ({ children }) => {
+    const teacherToken = sessionStorage.getItem("teacherToken");
+    // const teacherToken = true;
+    return teacherToken ? children : <Navigate to="/teacher" replace />;
   };
-  const UserPrivateRoute = ({ children }) => {
-    const userToken = sessionStorage.getItem("userToken");
-    // const userToken = true;
-    return userToken ? children : <Navigate to="/user" replace />;
+  const StudentPrivateRoute = ({ children }) => {
+    const studentToken = sessionStorage.getItem("studentToken");
+    // const studentToken = true;
+    return studentToken ? children : <Navigate to="/student" replace />;
   };
   const OpenRoutes = ({ children }) => {
-    const adminToken = sessionStorage.getItem("adminToken");
-    const userToken = sessionStorage.getItem("userToken");
-    return adminToken ? (
-      <Navigate to="/admin/dashboard" replace />
-    ) : userToken ? (
-      <Navigate to="/user/dashboard" replace />
+    const studentToken = sessionStorage.getItem("studentToken");
+    const teacherToken = sessionStorage.getItem("teacherToken");
+    return teacherToken ? (
+      <Navigate to="/teacher/dashboard" replace />
+    ) : studentToken ? (
+      <Navigate to="/student/dashboard" replace />
     ) : (
       children
     );
@@ -30,37 +33,39 @@ const MainRoutes = () => {
     <Routes>
       <Route path="/" element={<MainPage />} />
       <Route
-        path="/admin"
+        path="/teacher"
         element={
           <OpenRoutes>
-            <AdminLogin />
+            <TeacherHome />
+            {/* <AdminLogin /> */}
           </OpenRoutes>
         }
       ></Route>
       <Route
-        path="/user"
+        path="/student"
         element={
           <OpenRoutes>
-            <UserLogin />
+            <StudentHome />
+            {/* <UserLogin /> */}
           </OpenRoutes>
         }
       ></Route>
 
       <Route
-        path="/admin/*"
+        path="/teacher/*"
         element={
-          <AdminPrivateRoute>
-            <AdminRoutes />
-          </AdminPrivateRoute>
+          <TeacherPrivateRoute>
+            <TeacherRoutes />
+          </TeacherPrivateRoute>
         }
       />
 
       <Route
-        path="/user/*"
+        path="/student/*"
         element={
-          <UserPrivateRoute>
-            <UserRoutes />
-          </UserPrivateRoute>
+          <StudentPrivateRoute>
+            <StudentRoutes />
+          </StudentPrivateRoute>
         }
       />
     </Routes>

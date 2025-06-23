@@ -6,7 +6,7 @@ import { Users } from "../admin/pages/Users/Users";
 import Dashboard from "../admin/pages/Dashboard/dashboard";
 import { AddUsers } from "../admin/pages/AddUsers/AddUsers";
 
-const AdminRoutes = () => {
+const TeacherRoutes = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -19,4 +19,4 @@ const AdminRoutes = () => {
   );
 };
 
-export default AdminRoutes;
+export default TeacherRoutes;

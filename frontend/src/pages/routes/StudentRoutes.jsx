@@ -8,7 +8,7 @@ import Uploaded from "../user/pages/uploaded/Uploaded";
 import AddRecepies from "../user/pages/AddRecepies/AddRecepies";
 import AccoutSetting from "../user/pages/accountSetting/AccoutSetting";
 
-const UserRoutes = () => {
+const StudentRoutes = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -23,4 +23,4 @@ const UserRoutes = () => {
   )
 }
 
-export default UserRoutes
+export default StudentRoutes;
