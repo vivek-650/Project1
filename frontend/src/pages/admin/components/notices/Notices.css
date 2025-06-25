@@ -1,0 +1,129 @@
+
+.notice-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.notice-form-container,
+.notice-display-container {
+  background-color: #f7f9fc;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.notice-form-container h2,
+.notice-display-container h2 {
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.notice-message {
+  margin-top: 20px;
+  font-weight: 500;
+  color: #2d8640;
+}
+.notice-form-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f7f9fc;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.notice-form-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.notice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.notice-form label {
+  font-weight: 500;
+  color: #555;
+  display: flex;
+  flex-direction: column;
+}
+
+.notice-form input[type="text"],
+.notice-form textarea,
+.notice-form select,
+.notice-form input[type="file"] {
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.notice-form button {
+  padding: 12px;
+  background-color: #4b82f1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.notice-form button:hover {
+  background-color: #3465d9;
+}
+
+.notice-message {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: 500;
+  color: #2d8640;
+}
+.notice-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 30px;
+}
+
+.notice-item {
+  border: 1px solid #ccc;
+  background: #fdfdfd;
+  padding: 16px;
+  margin-bottom: 15px;
+  border-left: 6px solid #4b82f1;
+  border-radius: 8px;
+}
+
+.notice-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.notice-description {
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.notice-meta {
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 5px;
+}
+
+.notice-link {
+  color: #4b82f1;
+  font-weight: 500;
+  text-decoration: none;
+}
+.notice-link:hover {
+  text-decoration: underline;
+}
+
