@@ -1,8 +1,7 @@
 import { useState } from "react";
-// import Navbar from "../Navbar";
+import Navbar from "./Navbar";
 import { Colors } from "../../../../utils/constants";
 import { Outlet, useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
 
 export const Layout = () => {
   const [activeTab, setActiveTab] = useState(null);
@@ -11,28 +10,18 @@ export const Layout = () => {
   const menuItems = [
     {
       id: "1",
-      name: "All Recepies",
-      link: "/user/recepies",
+      name: "All Users",
+      link: "/teacher/dashboard/users",
     },
     {
       id: "2",
-      name: "Drafts",
-      link: "/user/drafts",
+      name: "Add users",
+      link: "/teacher/dashboard/add-users",
     },
     {
       id: "3",
-      name: "uploaded",
-      link: "/user/uploaded",
-    },
-    {
-      id: "4",
-      name: "Add new recepie",
-      link: "/user/new-recepie",
-    },
-    {
-      id: "5",
-      name: "User account setting",
-      link: "/user/user-setting",
+      name: "Requests",
+      link: "/teacher/dashboard/requests",
     },
   ];
 
@@ -66,13 +55,13 @@ export const Layout = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.clear("userToken");
-    navigate("/user");
+    sessionStorage.clear("teacherToken");
+    navigate("/");
   };
 
   return (
     <div style={styles.main}>
-      <Navbar userName={"TestUser"} onLogout={handleLogout} />
+      <Navbar userName={"Test Teacher"} onLogout={handleLogout} />
       <div style={styles.leftMenu}>
         {menuItems.map((item) => (
           <div

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const UserLogin = () => {
+const StudentLogin = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
   const [name, setName] = useState("");
@@ -255,7 +255,10 @@ const UserLogin = () => {
           <div style={styles.popup}>
             <h2>Forgot Password</h2>
             <div style={styles.formGroup}>
-              <label style={styles.ForgotLabel}>Enter company email for verification and request admin to grant permission </label>
+              <label style={styles.ForgotLabel}>
+                Enter company email for verification and request admin to grant
+                permission{" "}
+              </label>
               <input
                 type="email"
                 value={forgotPasswordEmail}
@@ -364,10 +367,10 @@ const styles = {
     gap: "3rem",
     // justifyContent: "space-evenly",
   },
-  ForgotLabel:{
+  ForgotLabel: {
     fontSize: "1.07rem",
-    marginBottom: "1rem"
+    marginBottom: "1rem",
   },
 };
 
-export default UserLogin;
+export default StudentLogin;
