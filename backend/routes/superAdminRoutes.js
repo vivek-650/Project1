@@ -10,88 +10,12 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+const router = express.Router();
+
 // --- Multer Setup for PDF Uploads ---
 const upload = multer({ storage: multer.memoryStorage() });
 
-const router = express.Router();
-
-// // 1. Create User and Set Default Password
-// router.post("/create-user", async (req, res) => {
-//   try {
-//     const { name, email, phone, recipeCount } = req.body;
-//     const defaultPassword = Math.random().toString(36).substring(2, 8);
-
-//     const userRef = db.collection("users").doc(email);
-//     await userRef.set({
-//       name,
-//       email,
-//       phone,
-//       password: defaultPassword,
-//       isActive: false,
-//       passwordChanged: false,
-//       recipeCount,
-//     });
-
-//     res.status(201).json({ message: "User created and password sent." });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// router.post("/create-users", async (req, res) => {
-//   try {
-//     const users = req.body;
-//     const batch = db.batch();
-
-//     users.forEach((user) => {
-//       const { name, email, phone, recipeCount } = user;
-//       const defaultPassword = Math.random().toString(36).substring(2, 8);
-//       const userRef = db.collection("users").doc(email);
-//       batch.set(userRef, {
-//         name,
-//         email,
-//         phone,
-//         password: defaultPassword,
-//         isActive: false,
-//         passwordChanged: false,
-//         recipeCount,
-//       });
-//     });
-
-//     await batch.commit();
-//     res.status(201).json({ message: "Users created and passwords sent." });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// // 2. Block/Delete User
-// router.post("/block-user", async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     const userRef = db.collection("users").doc(email);
-//     await userRef.update({ isActive: false });
-//     res.json({ message: "User blocked successfully" });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// // 3. View All Users
-// router.get("/users", async (req, res) => {
-//   try {
-//     const usersSnapshot = await db.collection("users").get();
-//     const users = usersSnapshot.docs.map((doc) => ({
-//       id: doc.id,
-//       ...doc.data(),
-//     }));
-//     res.json(users);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-// 4. Create Notice (with PDF upload to Supabase)
+// Create Notice (with PDF upload to Supabase)
 router.post("/create-notice", upload.single("document"), async (req, res) => {
   try {
     const { title, description, target } = req.body;
@@ -145,8 +69,27 @@ router.post("/create-notice", upload.single("document"), async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// Get Notices for Admin 
+// Get all notices (both student and teacher)
+router.get("/notices", async (req, res) => {
+  try {
+    const snapshot = await db
+      .collection("notices")
+      .orderBy("createdAt", "desc")
+      .get();
 
-// 5. Get Notices for Teachers
+    const notices = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).json(notices);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get Notices for Teachers
 router.get("/notices/teachers", async (req, res) => {
   try {
     const snapshot = await db
@@ -164,7 +107,7 @@ router.get("/notices/teachers", async (req, res) => {
   }
 });
 
-// 6. Get Notices for Students
+// Get Notices for Students
 router.get("/notices/students", async (req, res) => {
   try {
     const snapshot = await db
