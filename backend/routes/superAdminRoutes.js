@@ -21,6 +21,18 @@ router.post("/create-notice", upload.single("document"), async (req, res) => {
     const { title, description, target } = req.body;
     let documentUrl = "";
 
+    const snapshot = await db
+      .collection("notices")
+      .where("target", "==", target)
+      .get();
+    const count = snapshot.size + 1;
+    const pCount = String(count).padStart(2, "0");
+    const serial =
+      target === "teacher"
+        ? "AEC/CSE/PROJ/TEACH/"
+        : "AEC/CSE/PROJ/STUD/";
+    const serialNo = `${serial}${pCount}`;
+
     if (req.file) {
       const fileExt = path.extname(req.file.originalname);
       const fileName = `notice_${Date.now()}${fileExt}`;
@@ -48,10 +60,11 @@ router.post("/create-notice", upload.single("document"), async (req, res) => {
       description,
       documentUrl,
       target, // "teacher" or "student"
+      serialNo,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    res.status(201).json({ message: "Notice created successfully." });
+    res.status(201).json({ message: "Notice created successfully.", serialNo });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
