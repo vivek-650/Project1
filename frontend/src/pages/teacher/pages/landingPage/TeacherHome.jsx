@@ -46,8 +46,8 @@ const TeacherHome = () => {
               }}
             >
               <div className="teacher-notice-title">{notice.title}</div>
-              <div className="teacher-notice-description">
-                {notice.description}
+              <div className="teacher-notice-author">
+                {notice.serialNo || "Unknown"}
               </div>
               <div className="teacher-notice-date">
                 📅{" "}
@@ -55,6 +55,13 @@ const TeacherHome = () => {
                   ? new Date(notice.createdAt._seconds * 1000).toLocaleString()
                   : "Unknown"}
               </div>
+              <a
+                href={notice.documentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Document
+              </a>
             </li>
           ))}
         </ul>

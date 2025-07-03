@@ -14,7 +14,9 @@ const Notices = () => {
   // Fetch all notices
   const fetchNotices = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/super-admin/notices`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/super-admin/notices`
+      );
       setNotices(res.data);
     } catch (error) {
       console.error("Failed to fetch notices:", error.message);
@@ -27,7 +29,7 @@ const Notices = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title || !description || !target) {
+    if (!title || !target) {
       return setMessage("All fields are required.");
     }
 
@@ -43,11 +45,15 @@ const Notices = () => {
     }
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/super-admin/create-notice`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/super-admin/create-notice`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       setMessage(res.data.message);
       setTitle("");
@@ -71,7 +77,7 @@ const Notices = () => {
         <h2>Create a New Notice</h2>
         <form onSubmit={handleSubmit} className="notice-form">
           <label>
-            Title:
+            Notice Subject:
             <input
               type="text"
               value={title}
@@ -81,20 +87,10 @@ const Notices = () => {
           </label>
 
           <label>
-            Description:
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows="4"
-              required
-            />
-          </label>
-
-          <label>
             Target Audience:
             <select value={target} onChange={(e) => setTarget(e.target.value)}>
               <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
+              <option value="teacher">Supervisor</option>
             </select>
           </label>
 
@@ -128,8 +124,10 @@ const Notices = () => {
                 <div className="notice-description">{notice.description}</div>
                 <div className="notice-meta">
                   👤 Target: {notice.target} | 🕒{" "}
-                  {notice.createdAt?.seconds
-                    ? new Date(notice.createdAt.seconds * 1000).toLocaleString()
+                  {notice.createdAt?._seconds
+                    ? new Date(
+                        notice.createdAt._seconds * 1000
+                      ).toLocaleString()
                     : "Unknown"}
                 </div>
                 {notice.documentUrl && (

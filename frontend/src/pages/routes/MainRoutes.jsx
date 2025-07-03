@@ -126,9 +126,9 @@ const MainRoutes = () => {
       <Route
         path="/student/notice"
         element={
-          <OpenRoutes>
-            <StudentHome />
-          </OpenRoutes>
+          // <OpenRoutes>
+          <StudentHome />
+          // </OpenRoutes>
         }
       />
       <Route
