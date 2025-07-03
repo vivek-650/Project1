@@ -11,7 +11,9 @@ const TeacherHome = () => {
   useEffect(() => {
     const fetchNotices = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/super-admin/notices/teachers`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/super-admin/notices/teachers`
+        );
         setNotices(res.data);
       } catch (err) {
         console.error("Failed to fetch notices:", err.message);
@@ -44,7 +46,9 @@ const TeacherHome = () => {
               }}
             >
               <div className="teacher-notice-title">{notice.title}</div>
-              <div className="teacher-notice-description">{notice.description}</div>
+              <div className="teacher-notice-description">
+                {notice.description}
+              </div>
               <div className="teacher-notice-date">
                 📅{" "}
                 {notice.createdAt?._seconds
@@ -59,7 +63,7 @@ const TeacherHome = () => {
       <button
         className="teacher-dashboard-button"
         onClick={() => {
-          navigate("/teacher/dashboard", { replace: true });
+          navigate("/supervisor/dashboard", { replace: true });
         }}
       >
         Dashboard
