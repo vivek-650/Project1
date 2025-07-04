@@ -10,6 +10,9 @@ const Navbar = ({ userName, onLogout }) => {
       padding: "1% 16px",
       backgroundColor: Colors.primary,
       color: "white",
+      position: "fixed",
+      width: "100vw",
+      zIndex: 1000,
     },
     toolbar: {
       display: "flex",

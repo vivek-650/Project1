@@ -35,9 +35,9 @@ const AdminLogin = () => {
     }
 
     if (isValid) {
-      sessionStorage.setItem("adminToken", "AdminToken001");
+      sessionStorage.setItem("coordinatorToken", "coordinatorToken001");
       alert("Login successful!");
-      navigate("/admin/dashboard");
+      navigate("/coordinator/dashboard");
     }
   };
 

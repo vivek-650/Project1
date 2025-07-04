@@ -26,11 +26,12 @@ export const Layout = () => {
       width: "100%",
     },
     leftMenu: {
-      position: "absolute",
+      position: "fixed",
       left: 0,
       backgroundColor: Colors.secondary,
       width: "10%",
       height: "100%",
+      paddingTop: "5%",
     },
     menuItems: {
       padding: "10%",
@@ -46,17 +47,17 @@ export const Layout = () => {
 
   const handleMenuClick = (menu) => {
     setActiveTab(menu.name);
-    navigate(`/admin/dashboard/${menu.link}`);
+    navigate(`/coordinator/dashboard/${menu.link}`);
   };
 
   const handleLogout = () => {
-    sessionStorage.clear("adminToken");
+    sessionStorage.clear("coordinatorToken");
     navigate("/");
   };
 
   return (
     <div style={styles.main}>
-      <Navbar userName={"Test Admin"} onLogout={handleLogout} />
+      <Navbar userName={"Test Coordinator"} onLogout={handleLogout} />
       <div style={styles.leftMenu}>
         {menuItems.map((item) => (
           <div

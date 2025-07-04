@@ -1,16 +1,15 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const MainPage = () => {
+const NoticePage = () => {
   const navigate = useNavigate();
 
   const handleRoleSelection = (role) => {
-    if (role === "administrator") {
-      navigate("/administrator");
-    } else if (role === "coordinator") {
-      navigate("/coordinator");
-    } else if (role === "supervisor") {
-      navigate("/supervisor/login");
+    if (role === "supervisor") {
+      navigate("/supervisor/notice");
     } else if (role === "student") {
+      navigate("/student/notice");
+    } else if (role === "studentLogin") {
       navigate("/student/login");
     }
   };
@@ -37,25 +36,19 @@ const MainPage = () => {
       <div style={{ width: "100%", justifyContent: "center", display: "flex" }}>
         <button
           style={buttonStyle}
-          onClick={() => handleRoleSelection("administrator")}
-        >
-          Administrator Login
-        </button>
-        <button
-          style={buttonStyle}
-          onClick={() => handleRoleSelection("coordinator")}
-        >
-          Coordinator Login
-        </button>
-        <button
-          style={buttonStyle}
           onClick={() => handleRoleSelection("supervisor")}
         >
-          Supervisor Login
+          Notice For Supervisor
         </button>
         <button
           style={buttonStyle}
           onClick={() => handleRoleSelection("student")}
+        >
+          Notice for Students
+        </button>
+        <button
+          style={buttonStyle}
+          onClick={() => handleRoleSelection("studentLogin")}
         >
           Student Login
         </button>
@@ -64,4 +57,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default NoticePage;
