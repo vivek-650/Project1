@@ -80,6 +80,33 @@ router.post("/change-password", async (req, res) => {
   }
 });
 
+//update-profile
+router.post("/update-profile", async (req, res) => {
+  try {
+    const { name, contact, address, role, roll } = req.body;
+    console.log("Update Profile: ", req.body);
+    const userSnapshot = await db
+      .collection("users")
+      // .where("roll", "==", roll)
+      .where("roll", "==", roll)
+      .get();
+    if (userSnapshot.empty) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await db.collection("users").doc(userSnapshot.docs[0].id).update({
+      name,
+      contact,
+      address,
+      role,
+    });
+
+    res.json({ message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // 1. Add Recipe
 router.post("/add-recipe", async (req, res) => {
   try {
@@ -146,7 +173,10 @@ router.get("/user-details/:email", async (req, res) => {
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email, name } = req.body;
-    const userSnapshot = await db.collection("users").where("email", "==", email).get();
+    const userSnapshot = await db
+      .collection("users")
+      .where("email", "==", email)
+      .get();
 
     if (userSnapshot.empty) {
       return res.status(404).json({ message: "User not found." });
