@@ -6,6 +6,7 @@ const StudentLogin = () => {
   const [updateProfilePopup, setUpdateProfilePopup] = useState(false);
   const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
   const [name, setName] = useState("");
+  const [roll, setRoll] = useState(null);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,7 +23,7 @@ const StudentLogin = () => {
   const login = async () => {
     setLoading(true);
     try {
-      const loginData = { name: name, password: password };
+      const loginData = { roll: roll, password: password };
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/user/login`,
         {
@@ -87,7 +88,7 @@ const StudentLogin = () => {
   const changePassword = async () => {
     setLoading(true);
     try {
-      const userData = { name: name, newPassword: newPassword };
+      const userData = { roll: roll, newPassword: newPassword };
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/user/change-password`,
         {
@@ -104,7 +105,7 @@ const StudentLogin = () => {
         alert(
           "Password changes successfully , now try logging in with new password"
         );
-        navigate("/student/login");
+        window.location.reload();
       } else {
         console.log(
           "Error in user change password api response: ",
@@ -173,7 +174,7 @@ const StudentLogin = () => {
         contact: contact,
         address: address,
         role: role,
-        roll: 10800122131, // Assuming roll is a static value for now
+        roll: roll,
       };
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/user/update-profile`,
@@ -219,15 +220,15 @@ const StudentLogin = () => {
           <div style={{ ...styles.error, textAlign: "center" }}>{error}</div>
         )}
         <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>
-            Name
+          <label htmlFor="roll" style={styles.label}>
+            Roll
           </label>
           <input
-            type="name"
-            id="name"
+            type="number"
+            id="roll"
             placeholder="Enter username provided by admin"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={roll}
+            onChange={(e) => setRoll(e.target.value)}
             style={styles.input}
           />
         </div>
