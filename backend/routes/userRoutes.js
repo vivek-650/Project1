@@ -54,22 +54,13 @@ router.post("/login", async (req, res) => {
 router.post("/change-password", async (req, res) => {
   try {
     const { roll, newPassword } = req.body;
-    const userSnapshot = await db
-      .collection("students")
-      .where("roll", "==", roll)
-      .get();
+    const userSnapshot = await db.collection("students").doc(roll).get();
 
-    if (userSnapshot.empty) {
+    if (!userSnapshot.exists) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const user = userSnapshot.docs[0].data();
-
-    // if (user.password !== oldPassword) {
-    //   return res.status(401).json({ message: "Invalid old password" });
-    // }
-
-    await db.collection("students").doc(userSnapshot.docs[0].id).update({
+    await db.collection("students").doc(userSnapshot.id).update({
       password: newPassword,
       passwordChanged: true,
       isActive: true,
@@ -86,15 +77,12 @@ router.post("/update-profile", async (req, res) => {
   try {
     const { name, contact, address, role, roll } = req.body;
     console.log("Update Profile: ", req.body);
-    const userSnapshot = await db
-      .collection("students")
-      .where("roll", "==", roll)
-      .get();
-    if (userSnapshot.empty) {
+    const userSnapshot = await db.collection("students").doc(roll).get();
+    if (!userSnapshot.exists) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    await db.collection("students").doc(userSnapshot.docs[0].id).update({
+    await db.collection("students").doc(userSnapshot.id).update({
       name,
       contact,
       address,

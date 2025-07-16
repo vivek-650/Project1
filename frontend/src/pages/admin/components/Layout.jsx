@@ -9,14 +9,24 @@ export const Layout = () => {
 
   const menuItems = [
     {
-      id: "1",
-      name: "All Teachers",
-      link: "teachers",
+      id: "2",
+      name: "Notices",
+      link: "notices",
     },
     {
-      id: "2",
-      name: "All Notices",
-      link: "notices",
+      id: "3",
+      name: "Students",
+      link: "students",
+    },
+    {
+      id: "4",
+      name: "Projects",
+      link: "projects",
+    },
+    {
+      id: "5",
+      name: "Supervisors",
+      link: "supervisors",
     },
   ];
 
