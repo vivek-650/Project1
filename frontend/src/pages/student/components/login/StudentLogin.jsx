@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const StudentLogin = () => {
-  const [showPopup, setShowPopup] = useState(false);
+  const [changePasswordPopup, setChangePasswordPopup] = useState(false);
+  const [updateProfilePopup, setUpdateProfilePopup] = useState(false);
   const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
   const [name, setName] = useState("");
+  const [roll, setRoll] = useState(null);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,12 +15,15 @@ const StudentLogin = () => {
   const [newPasswordError, setNewPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [contact, setContact] = useState("");
+  const [address, setAddress] = useState("");
+  const [role, setRole] = useState("");
   const navigate = useNavigate();
 
   const login = async () => {
     setLoading(true);
     try {
-      const loginData = { name: name, password: password };
+      const loginData = { roll: roll, password: password };
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/user/login`,
         {
@@ -33,7 +38,8 @@ const StudentLogin = () => {
       const data = await response.json();
       if (response.ok) {
         if (response.status === 203) {
-          setShowPopup(true);
+          // setShowPopup(true);
+          setUpdateProfilePopup(true);
           setLoading(false);
           return;
         }
@@ -44,10 +50,12 @@ const StudentLogin = () => {
           return;
         }
 
-        sessionStorage.setItem("userToken", data.data.token);
+        sessionStorage.setItem("studentToken", data.data.token);
         sessionStorage.setItem("recipeCount", data.data.recipeCount);
         sessionStorage.setItem("email", data.data.email);
-        navigate("/user/dashboard");
+        // sessionStorage.setItem("roll", data.data.roll);
+
+        navigate("/student/dashboard");
 
         setLoading(false);
       } else {
@@ -80,7 +88,7 @@ const StudentLogin = () => {
   const changePassword = async () => {
     setLoading(true);
     try {
-      const userData = { name: name, newPassword: newPassword };
+      const userData = { roll: roll, newPassword: newPassword };
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/api/user/change-password`,
         {
@@ -97,7 +105,7 @@ const StudentLogin = () => {
         alert(
           "Password changes successfully , now try logging in with new password"
         );
-        navigate("/user");
+        window.location.reload();
       } else {
         console.log(
           "Error in user change password api response: ",
@@ -158,6 +166,43 @@ const StudentLogin = () => {
     }
   };
 
+  const handleProfileUpdate = async () => {
+    setLoading(true);
+    try {
+      const profileData = {
+        name: name,
+        contact: contact,
+        address: address,
+        role: role,
+        roll: roll,
+      };
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/user/update-profile`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(profileData),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Profile update response:", data);
+      if (response.ok) {
+        alert("Profile updated successfully");
+        setUpdateProfilePopup(false);
+        setChangePasswordPopup(true);
+        // navigate("/student/dashboard");
+      } else {
+        console.log("Error in profile update:", data.message);
+      }
+    } catch (error) {
+      console.log("Error in profile update api:", error);
+    }
+    setLoading(false);
+  };
+
   return (
     <div style={styles.loginCard}>
       <div style={styles.brand}>
@@ -175,15 +220,15 @@ const StudentLogin = () => {
           <div style={{ ...styles.error, textAlign: "center" }}>{error}</div>
         )}
         <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>
-            Name
+          <label htmlFor="roll" style={styles.label}>
+            Roll
           </label>
           <input
-            type="name"
-            id="name"
+            type="number"
+            id="roll"
             placeholder="Enter username provided by admin"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={roll}
+            onChange={(e) => setRoll(e.target.value)}
             style={styles.input}
           />
         </div>
@@ -218,7 +263,7 @@ const StudentLogin = () => {
         </button>
       </form>
 
-      {showPopup && (
+      {changePasswordPopup && (
         <div style={styles.popupOverlay}>
           <div style={styles.popup}>
             <h2>Set New Password</h2>
@@ -245,6 +290,55 @@ const StudentLogin = () => {
             )}
             <button onClick={handlePasswordChange} style={styles.loginBtn}>
               Submit
+            </button>
+          </div>
+        </div>
+      )}
+      {updateProfilePopup && (
+        <div style={styles.popupOverlay}>
+          <div style={styles.popup}>
+            <h2>Update Profile</h2>
+            <div style={styles.formGroup}>
+              <label>Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label>Contact</label>
+              <input
+                type="text"
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label>Address</label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label>Role</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                style={styles.input}
+              >
+                <option value="">Select Role</option>
+                <option value="leader">Team Leader</option>
+                <option value="member">Team Member</option>
+              </select>
+            </div>
+            <button onClick={handleProfileUpdate} style={styles.loginBtn}>
+              Update
             </button>
           </div>
         </div>
@@ -308,7 +402,7 @@ const styles = {
   },
   loginForm: { display: "flex", flexDirection: "column", width: "100%" },
   formGroup: {
-    marginBottom: "1rem",
+    // marginBottom: "1rem",
     display: "flex",
     flexDirection: "column",
     width: "100%",
@@ -316,7 +410,7 @@ const styles = {
   input: {
     width: "97%",
     height: "25px",
-    marginTop: "0.5rem",
+    // marginTop: "0.5rem",
     padding: "5px",
     borderRadius: "5px",
     border: "1px solid grey",
@@ -364,7 +458,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "3rem",
+    gap: "1rem",
     // justifyContent: "space-evenly",
   },
   ForgotLabel: {

@@ -13,6 +13,31 @@ const AdminLogin = () => {
     return re.test(String(email).toLowerCase());
   };
 
+  const coordinatorLogin = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/coordinator/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+      console.log("Login successful:", data);
+      sessionStorage.setItem("coordinatorToken", data.token);
+      navigate("/coordinator/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      // alert(error.message || "An error occurred during login");
+    }
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
     let isValid = true;
@@ -35,9 +60,7 @@ const AdminLogin = () => {
     }
 
     if (isValid) {
-      sessionStorage.setItem("coordinatorToken", "coordinatorToken001");
-      alert("Login successful!");
-      navigate("/coordinator/dashboard");
+      coordinatorLogin();
     }
   };
 

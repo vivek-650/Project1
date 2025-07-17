@@ -8,6 +8,7 @@ import superAdminRoutes from "./routes/superAdminRoutes.js";
 
 // import { app as firebaseApp, auth, db, storage } from "./config/firebase.js"; // ✅ Rename firebase app
 import { db, storage } from "./config/firebase.js";
+import coordinatorRoutes from "./routes/coordinatorRoutes.js";
 
 const app = express(); // Now this won't conflict
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 // Routes
 
 app.use("/api/admin", adminRoutes);
+app.use("/api/coordinator", coordinatorRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/super-admin", superAdminRoutes);
