@@ -4,13 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { Lock, User, MailCheck } from "lucide-react";
 
 const StudentLogin = () => {
-  const [showPopup, setShowPopup] = useState(false);
+  const [changePasswordPopup, setChangePasswordPopup] = useState(false);
+  const [updateProfilePopup, setUpdateProfilePopup] = useState(false);
   const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
+
   const [name, setName] = useState("");
+  const [roll, setRoll] = useState(null);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [contact, setContact] = useState("");
+  const [address, setAddress] = useState("");
+  const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,28 +25,30 @@ const StudentLogin = () => {
   const login = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, password }),
-      });
+      const loginData = { roll, password };
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/user/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
 
-      const data = await res.json();
-
-      if (res.ok) {
-        if (res.status === 203) {
-          setShowPopup(true);
+      const data = await response.json();
+      if (response.ok) {
+        if (response.status === 203) {
+          setUpdateProfilePopup(true);
+          setLoading(false);
           return;
         }
-        if (res.status === 201) {
-          setError(data.message);
-          return;
-        }
 
-        sessionStorage.setItem("userToken", data.data.token);
+        sessionStorage.setItem("studentToken", data.data.token);
         sessionStorage.setItem("recipeCount", data.data.recipeCount);
         sessionStorage.setItem("email", data.data.email);
-        navigate("/user/dashboard");
+        navigate("/student/dashboard");
       } else {
         setError(data.message);
       }
@@ -51,37 +59,43 @@ const StudentLogin = () => {
   };
 
   const changePassword = async () => {
-    if (newPassword !== confirmPassword || newPassword.length < 6) return;
+    if (newPassword !== confirmPassword || newPassword.length < 6) {
+      alert("Passwords do not match or are too short.");
+      return;
+    }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/change-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, newPassword }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/user/change-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roll, newPassword }),
+        }
+      );
 
+      const data = await res.json();
       if (res.ok) {
         alert("Password changed successfully!");
-        setShowPopup(false);
-        setName("");
-        setPassword("");
-        navigate("/user");
+        window.location.reload();
       } else {
-        const data = await res.json();
         alert(data.message || "Failed to change password.");
       }
     } catch (err) {
-      console.error("Change password error:", err);
+      alert("Something went wrong.");
     }
   };
 
   const handleForgotPassword = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotPasswordEmail }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: forgotPasswordEmail }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {
@@ -93,6 +107,41 @@ const StudentLogin = () => {
     } catch (err) {
       alert("Error occurred while requesting password reset.");
     }
+  };
+
+  const handleProfileUpdate = async () => {
+    setLoading(true);
+    try {
+      const profileData = {
+        name,
+        contact,
+        address,
+        role,
+        roll,
+      };
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/user/update-profile`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(profileData),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Profile updated successfully");
+        setUpdateProfilePopup(false);
+        setChangePasswordPopup(true);
+      } else {
+        alert(data.message || "Profile update failed");
+      }
+    } catch (error) {
+      alert("An error occurred");
+    }
+    setLoading(false);
   };
 
   return (
@@ -115,9 +164,9 @@ const StudentLogin = () => {
             <User className="absolute top-3 left-3 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Username"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Roll Number"
+              value={roll}
+              onChange={(e) => setRoll(e.target.value)}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -148,8 +197,8 @@ const StudentLogin = () => {
         </form>
       </div>
 
-      {/* New Password Modal */}
-      {showPopup && (
+      {/* Change Password Popup */}
+      {changePasswordPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
           <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-lg">
             <h3 className="text-lg font-bold mb-4 text-gray-800">Set New Password</h3>
@@ -177,7 +226,52 @@ const StudentLogin = () => {
         </div>
       )}
 
-      {/* Forgot Password Modal */}
+      {/* Update Profile Popup */}
+      {updateProfilePopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
+          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-lg space-y-3">
+            <h3 className="text-lg font-bold text-gray-800">Update Profile</h3>
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="text"
+              placeholder="Contact"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="text"
+              placeholder="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Select Role</option>
+              <option value="leader">Team Leader</option>
+              <option value="member">Team Member</option>
+            </select>
+            <button
+              onClick={handleProfileUpdate}
+              className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Forgot Password Popup */}
       {showForgotPasswordPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
           <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-lg">
