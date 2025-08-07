@@ -1,5 +1,7 @@
+/* eslint-disable */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Lock, User, MailCheck } from "lucide-react";
 
 const StudentLogin = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -7,40 +9,31 @@ const StudentLogin = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [error, setError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [newPasswordError, setNewPasswordError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const login = async () => {
     setLoading(true);
     try {
-      const loginData = { name: name, password: password };
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(loginData),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password }),
+      });
 
-      const data = await response.json();
-      if (response.ok) {
-        if (response.status === 203) {
+      const data = await res.json();
+
+      if (res.ok) {
+        if (res.status === 203) {
           setShowPopup(true);
-          setLoading(false);
           return;
         }
-
-        if (response.status === 201) {
+        if (res.status === 201) {
           setError(data.message);
-          setLoading(false);
           return;
         }
 
@@ -48,329 +41,170 @@ const StudentLogin = () => {
         sessionStorage.setItem("recipeCount", data.data.recipeCount);
         sessionStorage.setItem("email", data.data.email);
         navigate("/user/dashboard");
-
-        setLoading(false);
       } else {
         setError(data.message);
-        setLoading(false);
       }
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
-
-  const handleVerify = (e) => {
-    e.preventDefault();
-    let isValid = true;
-
-    if (!password) {
-      setPasswordError("Password is required");
-      isValid = false;
-    } else {
-      setPasswordError("");
-    }
-
-    if (isValid) {
-      setError("");
-      login();
-    }
-  };
-
-  const changePassword = async () => {
-    setLoading(true);
-    try {
-      const userData = { name: name, newPassword: newPassword };
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/change-password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok) {
-        alert(
-          "Password changes successfully , now try logging in with new password"
-        );
-        navigate("/user");
-      } else {
-        console.log(
-          "Error in user change password api response: ",
-          data.message
-        );
-      }
-    } catch (error) {
-      console.log("Error in user change password api: ", error);
+    } catch (err) {
+      setError(err.message);
     }
     setLoading(false);
   };
 
-  const handlePasswordChange = () => {
-    let isValid = true;
+  const changePassword = async () => {
+    if (newPassword !== confirmPassword || newPassword.length < 6) return;
 
-    if (newPassword.length < 6) {
-      setNewPasswordError("Password must be at least 6 characters");
-      isValid = false;
-    } else if (newPassword !== confirmPassword) {
-      setNewPasswordError("Passwords do not match");
-      isValid = false;
-    } else {
-      setNewPasswordError("");
-    }
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/change-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, newPassword }),
+      });
 
-    if (isValid) {
-      changePassword();
-      setName("");
-      setPassword("");
-      setShowPopup(false);
+      if (res.ok) {
+        alert("Password changed successfully!");
+        setShowPopup(false);
+        setName("");
+        setPassword("");
+        navigate("/user");
+      } else {
+        const data = await res.json();
+        alert(data.message || "Failed to change password.");
+      }
+    } catch (err) {
+      console.error("Change password error:", err);
     }
   };
 
-  const handleForgotPassword = async (email) => {
+  const handleForgotPassword = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotPasswordEmail }),
+      });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Password reset request sent successfully.");
+      const data = await res.json();
+      if (res.ok) {
+        alert("Password reset request sent!");
         setShowForgotPasswordPopup(false);
       } else {
-        alert(data.message || "Something went wrong. Please try again.");
+        alert(data.message || "Error sending request.");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while sending the request.");
+    } catch (err) {
+      alert("Error occurred while requesting password reset.");
     }
   };
 
   return (
-    <div style={styles.loginCard}>
-      <div style={styles.brand}>
-        <img
-          style={styles.brandLogo}
-          src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
-          alt="User"
-        />
-        <h1>Welcome back!</h1>
-        <p>Enter your credentials to access your account</p>
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fcdfff] via-white to-[#c5d2ff] font-sans px-4">
+      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-blue-100 backdrop-blur-md bg-opacity-90">
+        <div className="text-center mb-6">
+          <img
+            src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
+            className="w-16 h-16 mx-auto rounded-full border border-blue-300"
+            alt="User"
+          />
+          <h2 className="text-2xl font-semibold mt-4 text-gray-800">Student Login</h2>
+          <p className="text-sm text-gray-500">Sign in to your dashboard</p>
+        </div>
+
+        <form onSubmit={(e) => { e.preventDefault(); login(); }} className="space-y-4">
+          {error && <div className="text-red-500 text-sm">{error}</div>}
+
+          <div className="relative">
+            <User className="absolute top-3 left-3 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Username"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute top-3 left-3 text-gray-400" size={18} />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="text-right text-sm text-blue-500 cursor-pointer" onClick={() => setShowForgotPasswordPopup(true)}>
+            Forgot password?
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2 bg-blue-600 hover:bg-blue-700 transition text-white rounded-lg font-semibold"
+          >
+            {loading ? "Verifying..." : "Login"}
+          </button>
+        </form>
       </div>
 
-      <form id="loginForm" style={styles.loginForm} onSubmit={handleVerify}>
-        {error && (
-          <div style={{ ...styles.error, textAlign: "center" }}>{error}</div>
-        )}
-        <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>
-            Name
-          </label>
-          <input
-            type="name"
-            id="name"
-            placeholder="Enter username provided by admin"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={styles.input}
-          />
-        </div>
-
-        <div style={styles.formGroup}>
-          <label htmlFor="password" style={styles.label}>
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter default password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-          />
-          {passwordError && <div style={styles.error}>{passwordError}</div>}
-        </div>
-
-        <div style={styles.rememberForgot}>
-          <p
-            onClick={() => setShowForgotPasswordPopup(true)}
-            className="forgot-password"
-          >
-            Forgot password?
-          </p>
-        </div>
-
-        <button type="submit" style={styles.loginBtn}>
-          {loading ? "Loading..." : "Verify"}
-        </button>
-      </form>
-
+      {/* New Password Modal */}
       {showPopup && (
-        <div style={styles.popupOverlay}>
-          <div style={styles.popup}>
-            <h2>Set New Password</h2>
-            <div style={styles.formGroup}>
-              <label>New Password</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label>Confirm Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            {newPasswordError && (
-              <div style={styles.error}>{newPasswordError}</div>
-            )}
-            <button onClick={handlePasswordChange} style={styles.loginBtn}>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
+          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-lg">
+            <h3 className="text-lg font-bold mb-4 text-gray-800">Set New Password</h3>
+            <input
+              type="password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full mb-3 p-2 border rounded"
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full mb-3 p-2 border rounded"
+            />
+            <button
+              onClick={changePassword}
+              className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+            >
               Submit
             </button>
           </div>
         </div>
       )}
 
+      {/* Forgot Password Modal */}
       {showForgotPasswordPopup && (
-        <div style={styles.popupOverlay}>
-          <div style={styles.popup}>
-            <h2>Forgot Password</h2>
-            <div style={styles.formGroup}>
-              <label style={styles.ForgotLabel}>
-                Enter company email for verification and request admin to grant
-                permission{" "}
-              </label>
-              <input
-                type="email"
-                value={forgotPasswordEmail}
-                onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                style={styles.input}
-              />
-            </div>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
+          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-lg">
+            <h3 className="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">
+              <MailCheck size={20} /> Forgot Password
+            </h3>
+            <p className="text-sm mb-3 text-gray-600">
+              Enter your official email. Admin will verify and reset your password.
+            </p>
+            <input
+              type="email"
+              placeholder="Enter email"
+              value={forgotPasswordEmail}
+              onChange={(e) => setForgotPasswordEmail(e.target.value)}
+              className="w-full mb-4 p-2 border rounded"
+            />
             <button
-              onClick={() => handleForgotPassword(forgotPasswordEmail)}
-              style={{ ...styles.loginBtn, width: "80%" }}
+              onClick={handleForgotPassword}
+              className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
             >
-              Request
+              Request Reset
             </button>
           </div>
         </div>
       )}
     </div>
   );
-};
-
-const styles = {
-  loginCard: {
-    maxWidth: "400px",
-    margin: "1.5rem auto",
-    padding: "2rem",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    borderRadius: "10px",
-    backgroundColor: "#fff",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  brand: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "2rem",
-  },
-  brandLogo: {
-    width: "60px",
-    height: "60px",
-    marginBottom: "1rem",
-    backgroundColor: "#ccc",
-    borderRadius: "50%",
-    border: "1px solid #dadada",
-  },
-  loginForm: { display: "flex", flexDirection: "column", width: "100%" },
-  formGroup: {
-    marginBottom: "1rem",
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-  },
-  input: {
-    width: "97%",
-    height: "25px",
-    marginTop: "0.5rem",
-    padding: "5px",
-    borderRadius: "5px",
-    border: "1px solid grey",
-  },
-  label: { fontSize: "1.05rem" },
-  error: { color: "red", fontSize: "0.875rem", marginTop: "0.5rem" },
-  rememberForgot: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "1rem",
-    width: "100%",
-    color: "blue",
-    cursor: "pointer",
-  },
-  loginBtn: {
-    width: "100%",
-    padding: "0.75rem",
-    backgroundColor: "black",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontSize: "1rem",
-  },
-  popupOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0,0,0,0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  popup: {
-    backgroundColor: "#fff",
-    padding: "2rem",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-    width: "25%",
-    height: "50%",
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "3rem",
-    // justifyContent: "space-evenly",
-  },
-  ForgotLabel: {
-    fontSize: "1.07rem",
-    marginBottom: "1rem",
-  },
 };
 
 export default StudentLogin;
