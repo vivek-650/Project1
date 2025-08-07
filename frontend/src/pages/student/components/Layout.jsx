@@ -66,8 +66,8 @@ export const Layout = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.clear("userToken");
-    navigate("/user");
+    sessionStorage.clear("studentToken");
+    navigate("/student/login");
   };
 
   return (

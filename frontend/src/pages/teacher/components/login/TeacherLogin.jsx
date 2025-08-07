@@ -34,9 +34,9 @@ const TeacherLogin = () => {
     }
 
     if (isValid) {
-      sessionStorage.setItem("adminToken", "AdminToken001");
+      sessionStorage.setItem("supervisorToken", "SupervisorToken001");
       alert("Login successful!");
-      navigate("/admin/dashboard");
+      navigate("/supervisor/dashboard");
     }
   };
 

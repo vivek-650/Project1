@@ -6,11 +6,11 @@ const router = express.Router();
 //user login
 router.post("/login", async (req, res) => {
   try {
-    const { name, password } = req.body;
-    console.log("User: ", name, " Pass: ", password);
+    const { roll, password } = req.body;
+    console.log("Roll: ", roll, " Pass: ", password);
     const userSnapshot = await db
-      .collection("users")
-      .where("name", "==", name)
+      .collection("students")
+      .where("roll", "==", roll)
       .get();
 
     if (userSnapshot.empty) {
@@ -30,6 +30,7 @@ router.post("/login", async (req, res) => {
         return res.status(200).json({
           data: {
             name: user.name,
+            roll: user.roll,
             email: user.email,
             recipeCount: user.recipeCount,
             token: "userToken000",
@@ -52,29 +53,43 @@ router.post("/login", async (req, res) => {
 // Change Password
 router.post("/change-password", async (req, res) => {
   try {
-    const { name, newPassword } = req.body;
-    const userSnapshot = await db
-      .collection("users")
-      .where("name", "==", name)
-      .get();
+    const { roll, newPassword } = req.body;
+    const userSnapshot = await db.collection("students").doc(roll).get();
 
-    if (userSnapshot.empty) {
+    if (!userSnapshot.exists) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const user = userSnapshot.docs[0].data();
-
-    // if (user.password !== oldPassword) {
-    //   return res.status(401).json({ message: "Invalid old password" });
-    // }
-
-    await db.collection("users").doc(userSnapshot.docs[0].id).update({
+    await db.collection("students").doc(userSnapshot.id).update({
       password: newPassword,
       passwordChanged: true,
       isActive: true,
     });
 
     res.json({ message: "Password changed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//update-profile
+router.post("/update-profile", async (req, res) => {
+  try {
+    const { name, contact, address, role, roll } = req.body;
+    console.log("Update Profile: ", req.body);
+    const userSnapshot = await db.collection("students").doc(roll).get();
+    if (!userSnapshot.exists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await db.collection("students").doc(userSnapshot.id).update({
+      name,
+      contact,
+      address,
+      role,
+    });
+
+    res.json({ message: "Profile updated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -131,7 +146,7 @@ router.get("/user-details/:email", async (req, res) => {
   try {
     const { email } = req.params;
     const recipesSnapshot = await db
-      .collection("users")
+      .collection("students")
       .where("email", "==", email)
       .get();
     const userDetails = recipesSnapshot.docs.map((doc) => doc.data());
@@ -146,7 +161,10 @@ router.get("/user-details/:email", async (req, res) => {
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email, name } = req.body;
-    const userSnapshot = await db.collection("users").where("email", "==", email).get();
+    const userSnapshot = await db
+      .collection("students")
+      .where("email", "==", email)
+      .get();
 
     if (userSnapshot.empty) {
       return res.status(404).json({ message: "User not found." });
