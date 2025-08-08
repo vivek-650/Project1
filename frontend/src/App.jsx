@@ -1,9 +1,13 @@
 // import React from 'react'
+import { ToastContainer } from "react-fox-toast"
 import MainRoutes from "./pages/routes/MainRoutes"
 
 const App = () => {
   return (
-    <MainRoutes />
+    <div>
+      <ToastContainer /> 
+      <MainRoutes />
+    </div>
   )
 }
 
