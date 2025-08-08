@@ -1,8 +1,8 @@
 // frontend/src/components/team/TeamFormation.jsx
 import { useEffect, useState } from "react";
-import CreateTeamForm from "./CreateTeamForm.jsx";
-import TeamRequests from "./TeamRequests.jsx";
-import LeaderFinalize from "./LeaderFinalize";
+import CreateTeamForm from '../teamFormation/CreateTeamForm';
+import TeamRequests from "../teamFormation/TeamRequests";
+import LeaderFinalize from "../teamFormation/LeaderFinalize";
 import axios from "axios";
 import { Users, Crown, Loader2 } from "lucide-react";
 

@@ -1,4 +1,4 @@
-// frontend/src/components/team/TeamRequests.jsx
+/*eslint-disable*/
 import  { useEffect, useState } from "react";
 import axios from "axios";
 import { Users, CheckCircle2, XCircle, Loader2 } from "lucide-react";
