@@ -34,6 +34,12 @@ export const Layout = () => {
       name: "User account setting",
       link: "user-setting",
     },
+    
+    {
+      id: "6",
+      name: "Team Formation",
+      link: "team-formation",
+    },
   ];
 
   const styles = {

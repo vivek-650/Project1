@@ -183,4 +183,83 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
+// POST /create-team
+router.post("/create-team", async (req, res) => {
+  const { roll } = req.body;
+
+  if (!roll) {
+    return res.status(400).json({ message: "Roll number is required" });
+  }
+
+  const studentSnap = await db
+    .collection("students")
+    .where("roll", "==", roll)
+    .limit(1)
+    .get();
+
+  if (studentSnap.empty) {
+    return res.status(404).json({ message: "Student not found" });
+  }
+
+  const studentDoc = studentSnap.docs[0];
+  const student = studentDoc.data();
+
+  if (student.teamId) {
+    return res.status(400).json({ message: "Already in a team" });
+  }
+
+  const newTeamRef = db.collection("teams").doc(); // auto ID
+  const batch = db.batch();
+
+  batch.set(newTeamRef, {
+    teamId: newTeamRef.id,
+    createdBy: roll,
+    members: [roll],
+    status: "pending",
+    createdAt: new Date(),
+  });
+
+  batch.update(studentDoc.ref, { teamId: newTeamRef.id, isTeamLeader: true });
+
+  await batch.commit();
+
+  res.json({ message: "Team created successfully", teamId: newTeamRef.id });
+});
+
+// POST /join-team
+router.post("/join-team", async (req, res) => {
+  const { roll, teamId } = req.body;
+
+  const studentRef = db.collection("students").doc(roll);
+  const studentDoc = await studentRef.get();
+  if (!studentDoc.exists) return res.status(404).json({ message: "Student not found" });
+
+  const student = studentDoc.data();
+  if (student.teamId) return res.status(400).json({ message: "Already in a team" });
+
+  const teamRef = db.collection("teams").doc(teamId);
+  const teamDoc = await teamRef.get();
+  if (!teamDoc.exists) return res.status(404).json({ message: "Team not found" });
+
+  const team = teamDoc.data();
+  if (team.status !== "pending") return res.status(400).json({ message: "Team is full or locked" });
+
+  if (team.members.length >= 4)
+    return res.status(400).json({ message: "Team already has 4 members" });
+
+  const updatedMembers = [...team.members, roll];
+  const updates = {
+    members: updatedMembers,
+    status: updatedMembers.length === 4 ? "locked" : "pending",
+  };
+
+  const batch = db.batch();
+  batch.update(teamRef, updates);
+  batch.update(studentRef, { teamId: teamId });
+
+  await batch.commit();
+
+  res.json({ message: "Joined team successfully" });
+});
+
 export default router;
