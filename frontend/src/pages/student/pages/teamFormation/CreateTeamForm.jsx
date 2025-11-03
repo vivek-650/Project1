@@ -46,10 +46,13 @@ const CreateTeamForm = ({ onCreated }) => {
     const fetchStudents = async () => {
       try {
         setStudentsLoading(true);
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/users`);
-        if (!mounted) return;
-        // Expecting array of student docs with at least roll and email/name
-        setStudents(Array.isArray(res.data) ? res.data : []);
+  const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/users`);
+  if (!mounted) return;
+  // Expecting array of student docs with at least roll and email/name
+  const all = Array.isArray(res.data) ? res.data : [];
+  // Only include active students
+  const active = all.filter((s) => Boolean(s.isActive));
+  setStudents(active);
       } catch (err) {
         console.error("Failed to fetch students:", err.message);
         setStudents([]);
