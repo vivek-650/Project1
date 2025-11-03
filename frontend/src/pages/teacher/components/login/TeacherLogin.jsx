@@ -4,7 +4,6 @@ import { Mail, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const TeacherLogin = () => {
   const [email, setEmail] = useState("");
@@ -50,10 +49,7 @@ const TeacherLogin = () => {
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#cbd8ff] via-white to-[#ffcffa] dark:hidden" />
       <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
 
-      {/* Top bar with theme toggle */}
-      <div className="absolute top-4 right-4 z-[99999]">
-        <ThemeToggle />
-      </div>
+      {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
 
       <Card className="w-full max-w-md border border-border shadow-sm p-6">
         <CardHeader className="items-center text-center">

@@ -1,7 +1,6 @@
 import { MoveRight, Shield, ClipboardList, UserCheck, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const roles = [
   {
@@ -61,10 +60,7 @@ const MainPage = () => {
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#f5f7ff] via-white to-[#f5f7ff] dark:hidden" />
       <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
 
-      {/* Top bar with theme toggle */}
-      <div className="w-full flex justify-end p-4 relative z-[99999]">
-        <ThemeToggle />
-      </div>
+      {/* Global ThemeToggle is rendered in App.jsx; no local toggle here */}
 
       {/* Decorative Background Blobs */}
       <div className="pointer-events-none absolute top-[-10%] left-[-20%] w-[50vw] h-[50vw] bg-gradient-to-tr from-[#4F46E5] to-[#60A5FA] rounded-full blur-[120px] opacity-30 dark:opacity-15" />

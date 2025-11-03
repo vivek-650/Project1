@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { MoveRight, ScrollTextIcon, UserIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -17,10 +16,7 @@ const HomePage = () => {
       {/* Background gradients per theme */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#f5f7ff] via-white to-[#f5f7ff] dark:hidden" />
       <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
-      {/* Top bar with theme toggle */}
-      <div className="w-full flex justify-end p-4 relative z-[99999]">
-        <ThemeToggle />
-      </div>
+      {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
       {/* Custom Floating Animation Styles */}
       <style>{`
         @keyframes float {

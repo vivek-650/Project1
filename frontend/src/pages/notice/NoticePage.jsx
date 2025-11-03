@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { UserCheck, Bell, LogIn } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 const NoticePage = () => {
   const navigate = useNavigate();
@@ -11,48 +12,90 @@ const NoticePage = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-tr from-[#92acff91] via-[#eff2ff] to-[#ffdbfa] overflow-hidden px-6 py-16 flex items-center justify-center">
-      {/* Animated Background Blobs */}
-      <div className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-br from-[#362eda] to-[#60a5fa] rounded-full blur-2xl opacity-30 animate-float" />
-      <div className="absolute top-10 left-10 w-44 h-34 bg-gradient-to-br from-[#ff5fa2] to-[#ffc0cb] rounded-full blur-xl opacity-30 animate-floatReverse" />
+    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6 py-16 font-sans text-foreground bg-background">
+      {/* Theme-aware background layers */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#f5f7ff] via-white to-[#f5f7ff] dark:hidden" />
+      <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
+
+      {/* Local animation helpers (if not global) */}
+      <style>{`
+        @keyframes float { 0%,100%{transform:translateY(0) translateX(0)} 50%{transform:translateY(-12px) translateX(8px)} }
+        @keyframes floatReverse { 0%,100%{transform:translateY(0) translateX(0)} 50%{transform:translateY(12px) translateX(-8px)} }
+        .animate-float{ animation: float 2.4s ease-in-out infinite; }
+        .animate-floatReverse{ animation: floatReverse 2.4s ease-in-out infinite; }
+      `}</style>
+
+      {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
+
+      {/* Decorative Background Blobs */}
+      <div className="pointer-events-none absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-br from-[#4F46E5] to-[#60A5FA] rounded-full blur-2xl opacity-30 dark:opacity-15 animate-float" />
+      <div className="pointer-events-none absolute top-10 left-10 w-44 h-34 bg-gradient-to-br from-pink-400 to-[#FFB6C1] rounded-full blur-xl opacity-30 dark:opacity-15 animate-floatReverse" />
 
       {/* Main Content */}
       <div className="w-full max-w-5xl z-10 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-700 mb-4">
-          Official Notices & Access
-        </h1>
-        <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-          Navigate by your role to view relevant notices or access your dashboard—designed for an immersive AI-like feel.
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4">Official Notices & Access</h1>
+        <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
+          Navigate by your role to view relevant notices or access your dashboard.
         </p>
 
         {/* Role Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          <div
+          {/* Supervisor Notices */}
+          <Card
+            role="button"
+            tabIndex={0}
             onClick={() => handleRoleSelection("supervisor")}
-            className="cursor-pointer border border-blue-300/70 rounded-xl bg-pink-200/85 backdrop-blur-lg shadow-sm transition p-6 flex flex-col items-center"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleRoleSelection("supervisor"); }
+            }}
+            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition"
           >
-            <UserCheck className="text-4xl text-pink-600 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-1">Supervisor Notices</h3>
-            <p className="text-sm text-gray-600">All notices tailored for supervisors</p>
-          </div>
+            <CardHeader className="items-center text-center">
+              <div className="w-10 h-10 mb-2 rounded-lg bg-muted/60 grid place-items-center">
+                <UserCheck className="w-5 h-5 text-primary" />
+              </div>
+              <CardTitle className="text-xl">Supervisor Notices</CardTitle>
+              <CardDescription>All notices tailored for supervisors</CardDescription>
+            </CardHeader>
+          </Card>
 
-          <div
+          {/* Student Notices */}
+          <Card
+            role="button"
+            tabIndex={0}
             onClick={() => handleRoleSelection("student")}
-            className="cursor-pointer bg-[#fef9c3]/80 border border-blue-300/70 rounded-xl backdrop-blur-md shadow-sm transition p-6 flex flex-col items-center"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleRoleSelection("student"); }
+            }}
+            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition"
           >
-            <Bell className="text-4xl text-yellow-600 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-1">Student Notices</h3>
-            <p className="text-sm text-gray-600">All notices intended for students</p>
-          </div>
+            <CardHeader className="items-center text-center">
+              <div className="w-10 h-10 mb-2 rounded-lg bg-muted/60 grid place-items-center">
+                <Bell className="w-5 h-5 text-primary" />
+              </div>
+              <CardTitle className="text-xl">Student Notices</CardTitle>
+              <CardDescription>All notices intended for students</CardDescription>
+            </CardHeader>
+          </Card>
 
-          <div
+          {/* Student Portal Login (full width on sm) */}
+          <Card
+            role="button"
+            tabIndex={0}
             onClick={() => handleRoleSelection("studentLogin")}
-            className="cursor-pointer bg-[#f0f9ff]/80 border border-blue-300/70 rounded-xl backdrop-blur-md shadow-sm transition p-6 flex flex-col items-center sm:col-span-2"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleRoleSelection("studentLogin"); }
+            }}
+            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition sm:col-span-2"
           >
-            <LogIn className="text-4xl text-cyan-700 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-1">Student Portal Login</h3>
-            <p className="text-sm text-gray-600">Access your dashboard and submissions</p>
-          </div>
+            <CardHeader className="items-center text-center">
+              <div className="w-10 h-10 mb-2 rounded-lg bg-muted/60 grid place-items-center">
+                <LogIn className="w-5 h-5 text-primary" />
+              </div>
+              <CardTitle className="text-xl">Student Portal Login</CardTitle>
+              <CardDescription>Access your dashboard and submissions</CardDescription>
+            </CardHeader>
+          </Card>
         </div>
       </div>
     </div>

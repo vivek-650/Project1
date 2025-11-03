@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const StudentLogin = () => {
   const [changePasswordPopup, setChangePasswordPopup] = useState(false);
@@ -157,10 +156,7 @@ const StudentLogin = () => {
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#fcdfff] via-white to-[#c5d2ff] dark:hidden" />
       <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
 
-      {/* Top bar with theme toggle */}
-      <div className="absolute top-4 right-4 z-[99999]">
-        <ThemeToggle />
-      </div>
+      {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
 
       <Card className="w-full max-w-md border border-border shadow-sm">
         <CardHeader className="text-center">
