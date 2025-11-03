@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const LeaderFinalize = ({ team: initialTeam, onFinalized }) => {
+const LeaderFinalize = ({ team: initialTeam, onFinalized, allowFinalize = true }) => {
   const roll = sessionStorage.getItem("roll");
   const [team, setTeam] = useState(initialTeam);
   const [loading, setLoading] = useState(false);
@@ -30,6 +30,7 @@ const LeaderFinalize = ({ team: initialTeam, onFinalized }) => {
 
   const finalize = async () => {
     if (!allAccepted) return alert("All members must accept before finalizing.");
+    if (!allowFinalize) return;
     setLoading(true);
     try {
       await axios.post(`${import.meta.env.VITE_BASE_URL}/api/team/finalize`, { 
@@ -151,7 +152,7 @@ const LeaderFinalize = ({ team: initialTeam, onFinalized }) => {
         {/* Finalize Button */}
         <Button
           onClick={finalize}
-          disabled={!allAccepted || loading}
+          disabled={!allAccepted || loading || !allowFinalize}
           className="w-full disabled:opacity-50"
           size="lg"
         >
@@ -161,10 +162,17 @@ const LeaderFinalize = ({ team: initialTeam, onFinalized }) => {
               Finalizing Team...
             </>
           ) : allAccepted ? (
-            <>
-              <Lock className="w-4 h-4 mr-2" />
-              Finalize Team & Lock Roster
-            </>
+            allowFinalize ? (
+              <>
+                <Lock className="w-4 h-4 mr-2" />
+                Finalize Team & Lock Roster
+              </>
+            ) : (
+              <>
+                <Clock className="w-4 h-4 mr-2" />
+                Waiting for Leader to Finalize
+              </>
+            )
           ) : (
             <>
               <Clock className="w-4 h-4 mr-2" />

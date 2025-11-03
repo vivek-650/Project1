@@ -21,6 +21,7 @@ const CreateTeamForm = ({ onCreated }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [acceptedRolls, setAcceptedRolls] = useState(new Set());
 
   const setMemberField = (idx, field, value) => {
     const copy = [...members];
@@ -50,13 +51,18 @@ const CreateTeamForm = ({ onCreated }) => {
     const fetchStudents = async () => {
       try {
         setStudentsLoading(true);
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/users`);
+        const [usersRes, acceptedRes] = await Promise.all([
+          axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/users`),
+          axios.get(`${import.meta.env.VITE_BASE_URL}/api/team/accepted-members`),
+        ]);
         if (!mounted) return;
         // Expecting array of student docs with at least roll and email/name
-        const all = Array.isArray(res.data) ? res.data : [];
+        const all = Array.isArray(usersRes.data) ? usersRes.data : [];
         // Only include active students
         const active = all.filter((s) => Boolean(s.isActive));
         setStudents(active);
+        const accepted = Array.isArray(acceptedRes.data?.rolls) ? acceptedRes.data.rolls : [];
+        setAcceptedRolls(new Set(accepted.map((r) => String(r))));
       } catch (err) {
         console.error("Failed to fetch students:", err.message);
         setStudents([]);
@@ -170,14 +176,30 @@ const CreateTeamForm = ({ onCreated }) => {
                         <SelectContent>
                           {students
                             .filter((s) => String(s.roll) !== String(roll))
-                            .map((s) => (
-                              <SelectItem key={s.roll} value={s.roll}>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{s.roll}</span>
-                                  {s.name && <span className="text-muted-foreground text-sm">• {s.name}</span>}
-                                </div>
-                              </SelectItem>
-                            ))}
+                            .map((s) => {
+                              const sRoll = String(s.roll);
+                              const alreadyPicked = members.some((mm, idx) => idx !== i && String(mm.roll) === sRoll);
+                              const inTeam = Boolean(s.teamId);
+                              const hasAcceptedElsewhere = acceptedRolls.has(sRoll);
+                              const disabled = alreadyPicked || inTeam || hasAcceptedElsewhere;
+                              return (
+                                <SelectItem key={s.roll} value={s.roll} disabled={disabled}>
+                                  <div className="flex items-center gap-2 w-full">
+                                    <span className="font-medium">{s.roll}</span>
+                                    {s.name && <span className="text-muted-foreground text-sm">• {s.name}</span>}
+                                    {inTeam && (
+                                      <Badge variant="secondary" className="ml-auto text-foreground/80">In team</Badge>
+                                    )}
+                                    {!inTeam && hasAcceptedElsewhere && (
+                                      <Badge variant="outline" className="ml-auto bg-amber-50 text-amber-700 border-amber-200">Accepted</Badge>
+                                    )}
+                                    {alreadyPicked && !inTeam && !hasAcceptedElsewhere && (
+                                      <Badge variant="outline" className="ml-auto">Selected</Badge>
+                                    )}
+                                  </div>
+                                </SelectItem>
+                              );
+                            })}
                         </SelectContent>
                       </Select>
                     </div>

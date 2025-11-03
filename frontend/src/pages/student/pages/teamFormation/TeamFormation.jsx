@@ -12,6 +12,7 @@ const TeamFormation = () => {
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [acceptedInvite, setAcceptedInvite] = useState(null);
 
   const refresh = () => setRefreshKey((k) => k + 1);
 
@@ -26,6 +27,31 @@ const TeamFormation = () => {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, [roll, refreshKey]);
+
+  // If no team yet, check invitations and see if the current member has already accepted one
+  useEffect(() => {
+    if (!roll) return;
+    if (team) {
+      setAcceptedInvite(null);
+      return;
+    }
+    let active = true;
+    const fetchInvites = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/team/requests/${roll}`);
+        const invites = Array.isArray(res.data?.invitations) ? res.data.invitations : [];
+        // Find first invite where THIS student's status is accepted
+        const mine = invites.find((t) => t.members?.some((m) => m.roll === roll && m.status === "accepted"));
+        if (active) setAcceptedInvite(mine || null);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchInvites();
+    return () => {
+      active = false;
+    };
+  }, [roll, refreshKey, team]);
 
   return (
     <div className="p-6 space-y-6">
@@ -137,6 +163,30 @@ const TeamFormation = () => {
           {team.leaderRoll === roll && team.status === "pending" && (
             <LeaderFinalize team={team} onFinalized={refresh} />
           )}
+        </div>
+      )}
+
+      {/* If member has accepted an invitation but team is not attached yet, show finalize view (read-only) */}
+      {!loading && !team && acceptedInvite && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-primary" />
+                  <span>Pending Team</span>
+                </div>
+                <Badge className="bg-amber-100 text-amber-800 border-amber-200">PENDING</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm text-muted-foreground">
+                You&apos;ve accepted an invitation. Waiting for the leader to finalize the team.
+              </div>
+            </CardContent>
+          </Card>
+
+          <LeaderFinalize team={acceptedInvite} onFinalized={refresh} allowFinalize={false} />
         </div>
       )}
     </div>
