@@ -170,7 +170,7 @@ const CreateTeamForm = ({ onCreated }) => {
                         value={m.roll}
                         onValueChange={(value) => setMemberField(i, "roll", value)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="cursor-pointer">
                           <SelectValue placeholder="Choose roll number" />
                         </SelectTrigger>
                         <SelectContent>
@@ -183,7 +183,12 @@ const CreateTeamForm = ({ onCreated }) => {
                               const hasAcceptedElsewhere = acceptedRolls.has(sRoll);
                               const disabled = alreadyPicked || inTeam || hasAcceptedElsewhere;
                               return (
-                                <SelectItem key={s.roll} value={s.roll} disabled={disabled}>
+                                <SelectItem
+                                  key={s.roll}
+                                  value={s.roll}
+                                  disabled={disabled}
+                                  className={disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}
+                                >
                                   <div className="flex items-center gap-2 w-full">
                                     <span className="font-medium">{s.roll}</span>
                                     {s.name && <span className="text-muted-foreground text-sm">• {s.name}</span>}

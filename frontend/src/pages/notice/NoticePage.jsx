@@ -48,7 +48,7 @@ const NoticePage = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleRoleSelection("supervisor"); }
             }}
-            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition"
+            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition cursor-pointer"
           >
             <CardHeader className="items-center text-center">
               <div className="w-10 h-10 mb-2 rounded-lg bg-muted/60 grid place-items-center">
@@ -67,7 +67,7 @@ const NoticePage = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleRoleSelection("student"); }
             }}
-            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition"
+            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition cursor-pointer"
           >
             <CardHeader className="items-center text-center">
               <div className="w-10 h-10 mb-2 rounded-lg bg-muted/60 grid place-items-center">
@@ -86,7 +86,7 @@ const NoticePage = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleRoleSelection("studentLogin"); }
             }}
-            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition sm:col-span-2"
+            className="group rounded-2xl border border-border bg-card/80 backdrop-blur-xl shadow-sm hover:shadow-md transition sm:col-span-2 cursor-pointer"
           >
             <CardHeader className="items-center text-center">
               <div className="w-10 h-10 mb-2 rounded-lg bg-muted/60 grid place-items-center">
