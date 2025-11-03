@@ -1,7 +1,9 @@
-/*eslint-disable*/
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { Users, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Mail, Crown } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const TeamRequests = ({ onResponded }) => {
   const roll = sessionStorage.getItem("roll");
@@ -26,6 +28,7 @@ const TeamRequests = ({ onResponded }) => {
 
   useEffect(() => {
     fetchInvites();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const respond = async (teamId, action) => {
@@ -48,88 +51,139 @@ const TeamRequests = ({ onResponded }) => {
   // Loading UI
   if (loading)
     return (
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 rounded-xl shadow-lg text-white flex items-center gap-3">
-        <Loader2 className="animate-spin text-blue-400" /> Fetching invites...
-      </div>
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
+            <span className="text-sm">Loading your invitations...</span>
+          </div>
+        </CardContent>
+      </Card>
     );
 
   // Empty UI
   if (!invites.length)
     return (
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 rounded-xl shadow-lg text-gray-300 text-center">
-        No pending invites.
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="w-5 h-5 text-primary" />
+            Team Invitations
+          </CardTitle>
+          <CardDescription>You have no pending team invitations</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
+              <Mail className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              When team leaders invite you, invitations will appear here.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     );
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 rounded-xl shadow-lg text-white border border-gray-700">
-      <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 flex items-center gap-2 mb-5">
-        <Users className="w-6 h-6" /> Team Invitations
-      </h3>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Mail className="w-5 h-5 text-primary" />
+          Team Invitations
+        </CardTitle>
+        <CardDescription>
+          {invites.length} pending invitation{invites.length !== 1 ? "s" : ""}
+        </CardDescription>
+      </CardHeader>
 
-      <div className="space-y-4">
+      <CardContent className="pt-6 space-y-4">
         {invites.map((t) => (
-          <div
+          <Card
             key={t.teamId}
-            className="p-5 rounded-lg bg-white/5 backdrop-blur-md border border-gray-700 hover:border-blue-500 transition-all"
+            className="bg-muted/30"
           >
-            <div className="text-sm mb-1">
-              From leader:{" "}
-              <strong className="text-blue-400">{t.leaderRoll}</strong>
-            </div>
+            <CardContent className="pt-6">
+              {/* Leader Info */}
+              <div className="flex items-center gap-3 mb-4 pb-4 border-b">
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Crown className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Team Leader</p>
+                  <p className="font-medium text-foreground">{t.leaderRoll}</p>
+                </div>
+              </div>
 
-            <div className="text-xs text-gray-300">
-              Members:
-              <ul className="list-disc ml-5 mt-1 space-y-0.5">
-                {t.members.map((m) => (
-                  <li key={m.roll}>
-                    <span className="text-blue-300">{m.roll}</span> — {m.name} —{" "}
-                    <span
-                      className={
-                        m.status === "accepted"
-                          ? "text-green-400"
-                          : "text-yellow-400"
-                      }
+              {/* Members List */}
+              <div className="mb-4">
+                <p className="text-xs font-medium text-muted-foreground mb-3">
+                  Team Members
+                </p>
+                <div className="space-y-2">
+                  {t.members.map((m) => (
+                    <div
+                      key={m.roll}
+                      className="flex items-center justify-between p-3 rounded-lg bg-background border"
                     >
-                      {m.status}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm text-foreground truncate">{m.name}</p>
+                        <p className="text-xs text-muted-foreground">{m.roll}</p>
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className={m.status === "accepted"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200 ml-2"
+                          : "bg-amber-50 text-amber-700 border-amber-200 ml-2"
+                        }
+                      >
+                        {m.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-            {/* Action buttons */}
-            <div className="mt-4 flex gap-3">
-              <button
-                onClick={() => respond(t.teamId, "accept")}
-                disabled={actionLoading[t.teamId]}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 px-4 py-2 rounded-lg font-medium text-white shadow hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
-              >
-                {actionLoading[t.teamId] ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <CheckCircle2 className="w-4 h-4" />
-                )}
-                Accept
-              </button>
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() => respond(t.teamId, "accept")}
+                  disabled={actionLoading[t.teamId]}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                  size="sm"
+                >
+                  {actionLoading[t.teamId] ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      Accept
+                    </>
+                  )}
+                </Button>
 
-              <button
-                onClick={() => respond(t.teamId, "decline")}
-                disabled={actionLoading[t.teamId]}
-                className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 rounded-lg font-medium text-white shadow hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
-              >
-                {actionLoading[t.teamId] ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <XCircle className="w-4 h-4" />
-                )}
-                Decline
-              </button>
-            </div>
-          </div>
+                <Button
+                  onClick={() => respond(t.teamId, "decline")}
+                  disabled={actionLoading[t.teamId]}
+                  variant="outline"
+                  className="flex-1 border-destructive/50 text-destructive hover:bg-destructive/10"
+                  size="sm"
+                >
+                  {actionLoading[t.teamId] ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Decline
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         ))}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

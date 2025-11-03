@@ -9,9 +9,9 @@ const AdminRoutes = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index path={"/"} element={<Dashboard />} />
+        <Route index element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/students" element={<Students />} />
-        <Route path="/teachers" element={<Dashboard />} />
         <Route path="/notices" element={<Notices />} />
       </Route>
     </Routes>

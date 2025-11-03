@@ -1,5 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { MoveRight, ScrollTextIcon, UserIcon} from "lucide-react";
+import { MoveRight, ScrollTextIcon, UserIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+
 const HomePage = () => {
   const navigate = useNavigate();
 
@@ -9,7 +13,14 @@ const HomePage = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center font-sans overflow-hidden bg-gradient-to-br from-[#f5f7ff] via-[#ffffff] to-[#f5f7ff]">
+    <div className="relative min-h-screen flex flex-col items-center font-sans overflow-hidden text-foreground bg-background">
+      {/* Background gradients per theme */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#f5f7ff] via-white to-[#f5f7ff] dark:hidden" />
+      <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
+      {/* Top bar with theme toggle */}
+      <div className="w-full flex justify-end p-4 relative z-[99999]">
+        <ThemeToggle />
+      </div>
       {/* Custom Floating Animation Styles */}
       <style>{`
         @keyframes float {
@@ -28,9 +39,9 @@ const HomePage = () => {
         }
       `}</style>
 
-      {/* Decorative Background Blobs */}
-      <div className="absolute top-[-10%] left-[-20%] w-[50vw] h-[50vw] bg-gradient-to-tr from-[#4F46E5] to-[#60A5FA] rounded-full blur-[120px] opacity-40" />
-      <div className="absolute bottom-[-15%] right-[-20%] w-[60vw] h-[60vw] bg-gradient-to-tr from-pink-400 to-[#FFB6C1] rounded-full blur-[120px] opacity-40" />
+  {/* Decorative Background Blobs */}
+  <div className="pointer-events-none absolute top-[-10%] left-[-20%] w-[50vw] h-[50vw] bg-gradient-to-tr from-[#4F46E5] to-[#60A5FA] rounded-full blur-[120px] opacity-30 dark:opacity-15" />
+  <div className="pointer-events-none absolute bottom-[-15%] right-[-20%] w-[60vw] h-[60vw] bg-gradient-to-tr from-pink-400 to-[#FFB6C1] rounded-full blur-[120px] opacity-30 dark:opacity-15" />
 
        {/* Floating Shapes */}
       <div className="absolute top-10 right-20 w-20 h-20 bg-gradient-to-br from-[#4F46E5] to-[#60A5FA] rounded-full blur-2xl opacity-60 animate-float" />
@@ -38,10 +49,10 @@ const HomePage = () => {
 
       {/* Hero Section */}
       <div className="text-center mt-20 z-10 px-4 max-w-4xl">
-        <h1 className="text-3xl md:text-5xl font-bold text-gray-700 leading-tight">
+        <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight">
           Aecura – Smart Project Management, Engineered for Excellence.
         </h1>
-        <p className="mt-4 text-gray-600 text-sm md:text-lg leading-relaxed">
+        <p className="mt-4 text-muted-foreground text-sm md:text-lg leading-relaxed">
           Seamlessly connecting{" "}
           <span className="font-semibold"> students and professors </span> for
           project management, notice sharing, and academic collaboration.
@@ -51,44 +62,44 @@ const HomePage = () => {
       {/* Cards Section */}
       <div className="mt-16 flex flex-wrap justify-center gap-8 px-6 z-10">
         {/* Card 1 */}
-        <div className="flex flex-col items-center bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl border border-blue-500/20 p-6 w-full sm:w-[280px] max-w-xs transition-all duration-300 hover:shadow-[#60A5FA]/40">
-          <UserIcon
-            className="w-[90%] mb-4 rounded-xl"
-          />
-          <p className="text-xl font-semibold text-gray-900 mb-2">
-            Members Area
-          </p>
-          <p className="text-sm text-gray-500 text-center mb-5">
-            Manage student and faculty details efficiently in one central space.
-          </p>
-          <button
-            className="flex items-center justify-center gap-1 w-full min-h-[42px] bg-gradient-to-r from-[#6366F1] to-[#60A5FA] text-white rounded-xl cursor-pointer font-semibold text-sm hover:opacity-90 transition-opacity"
-            onClick={() => handleRoleSelection("members")}
-          >
-            Get Started
-            <MoveRight />
-          </button>
-        </div>
+        <Card className="w-full sm:w-[280px] max-w-xs rounded-2xl border border-border shadow-2xl backdrop-blur-xl bg-card/80 transition-all duration-300 hover:shadow-[#60A5FA]/40">
+          <CardHeader className="items-center text-center">
+            <UserIcon className="w-10 h-10 mb-2 text-primary" />
+            <CardTitle className="text-xl text-foreground">Members Area</CardTitle>
+            <CardDescription className="text-center">
+              Manage student and faculty details efficiently in one central space.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              className="w-full min-h-[42px] bg-gradient-to-r from-[#6366F1] to-[#60A5FA] text-white hover:opacity-90 transition-opacity dark:from-primary dark:to-primary/80 dark:text-primary-foreground"
+              onClick={() => handleRoleSelection("members")}
+            >
+              Get Started
+              <MoveRight className="ml-1" />
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Card 2 */}
-        <div className="flex flex-col items-center bg-white/30 backdrop-blur-xl rounded-2xl shadow-2xl border border-blue-500/20 p-6 w-full sm:w-[280px] max-w-xs transition-all duration-300 hover:shadow-[#60A5FA]/40">
-          <ScrollTextIcon
-            className="text-2xl mb-4"
-          />
-          <p className="text-xl font-semibold text-gray-900 mb-2">
-            Notice Board
-          </p>
-          <p className="text-sm text-gray-600 text-center mb-4">
-            Post important updates and announcements for all students.
-          </p>
-          <button
-            className=" flex items-center justify-center gap-1 w-full min-h-[40px] bg-gradient-to-r from-pink-400 to-[#fa99a7] text-white rounded-xl cursor-pointer font-semibold text-sm hover:opacity-90 transition-opacity"
-            onClick={() => handleRoleSelection("notice")}
-          >
-            Get Started
-            <MoveRight />
-          </button>
-        </div>
+        <Card className="w-full sm:w-[280px] max-w-xs rounded-2xl border border-border shadow-2xl backdrop-blur-xl bg-card/80 transition-all duration-300 hover:shadow-[#60A5FA]/40">
+          <CardHeader className="items-center text-center">
+            <ScrollTextIcon className="w-10 h-10 mb-2 text-primary" />
+            <CardTitle className="text-xl text-foreground">Notice Board</CardTitle>
+            <CardDescription className="text-center">
+              Post important updates and announcements for all students.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              className="w-full min-h-[40px] bg-gradient-to-r from-[#6366F1] to-[#60A5FA] text-white hover:opacity-90 transition-opacity dark:from-primary dark:to-primary/80 dark:text-primary-foreground"
+              onClick={() => handleRoleSelection("notice")}
+            >
+              Get Started
+              <MoveRight className="ml-1" />
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

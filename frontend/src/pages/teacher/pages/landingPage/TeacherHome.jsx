@@ -76,7 +76,7 @@ const TeacherHome = () => {
       {/* Notices Table */}
       <div className="overflow-auto w-full max-w-6xl bg-white rounded-lg shadow-md border border-gray-200">
         <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-[#4F46E5] text-white uppercase text-xs">
+          <thead className="bg-primary text-primary-foreground uppercase text-xs">
             <tr>
               <th className="px-4 py-3">#</th>
               <th className="px-4 py-3">Date</th>
@@ -141,7 +141,7 @@ const TeacherHome = () => {
             key={i}
             onClick={() => setCurrentPage(i + 1)}
             className={`px-3 py-1 text-sm border rounded ${
-              currentPage === i + 1 ? "bg-[#4F46E5] text-white" : "hover:bg-gray-100"
+              currentPage === i + 1 ? "bg-primary text-primary-foreground" : "hover:bg-accent"
             }`}
           >
             {i + 1}
@@ -159,7 +159,7 @@ const TeacherHome = () => {
       {/* Go to Dashboard */}
       <button
         onClick={() => navigate("/supervisor/dashboard", { replace: true })}
-        className="mt-8 px-6 py-2 bg-[#4F46E5] hover:bg-[#3f3cc7] text-white rounded shadow-md"
+  className="mt-8 px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded shadow-md"
       >
         Go to Dashboard
       </button>
