@@ -28,7 +28,7 @@ const TeamFormation = () => {
   }, [roll, refreshKey]);
 
   return (
-    <div className="min-h-screen p-6 space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-semibold text-foreground mb-2 flex items-center gap-3">
