@@ -13,6 +13,7 @@ const TeamFormation = () => {
   const [loading, setLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [acceptedInvite, setAcceptedInvite] = useState(null);
+  const [role, setRole] = useState(null);
 
   const refresh = () => setRefreshKey((k) => k + 1);
 
@@ -53,6 +54,26 @@ const TeamFormation = () => {
     };
   }, [roll, refreshKey, team]);
 
+  // Fetch current student's role (leader/member) using stored email
+  useEffect(() => {
+    const email = sessionStorage.getItem("email");
+    if (!email) return;
+    let active = true;
+    (async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/user-details/${encodeURIComponent(email)}`);
+        const list = Array.isArray(res.data) ? res.data : [];
+        const me = list[0];
+        if (active) setRole(me?.role || null);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        // no-op
+      }
+    })();
+    return () => { active = false; };
+  }, []);
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -85,11 +106,17 @@ const TeamFormation = () => {
         </Card>
       )}
 
-      {!loading && !team && (
-        <div className="grid lg:grid-cols-2 gap-6">
-          <CreateTeamForm onCreated={refresh} />
-          <TeamRequests onResponded={refresh} />
-        </div>
+      {!loading && !team && !acceptedInvite && (
+        role === "leader" ? (
+          <div className="grid lg:grid-cols-2 gap-6">
+            <CreateTeamForm onCreated={refresh} />
+            <TeamRequests onResponded={refresh} />
+          </div>
+        ) : (
+          <div className="grid lg:grid-cols-1 gap-6">
+            <TeamRequests onResponded={refresh} />
+          </div>
+        )
       )}
 
       {!loading && team && (
