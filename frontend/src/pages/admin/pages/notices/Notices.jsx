@@ -138,7 +138,7 @@ const Notices = () => {
       {/* Add Notice Button */}
       <button
         onClick={() => setFormOpen(true)}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-500 to-teal-400 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition"
+  className="fixed bottom-6 right-6 bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:bg-primary/90 hover:shadow-xl transition"
       >
         <Plus />
       </button>
@@ -212,7 +212,7 @@ const Notices = () => {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-teal-400 text-white py-2 rounded-lg shadow hover:shadow-md transition"
+                className="w-full bg-primary text-primary-foreground py-2 rounded-lg shadow hover:bg-primary/90 hover:shadow-md transition"
                 disabled={loading}
               >
                 {loading ? "Submitting..." : "Submit Notice"}

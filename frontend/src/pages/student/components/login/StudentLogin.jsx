@@ -2,6 +2,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, User, MailCheck } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const StudentLogin = () => {
   const [changePasswordPopup, setChangePasswordPopup] = useState(false);
@@ -146,158 +151,143 @@ const StudentLogin = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fcdfff] via-white to-[#c5d2ff] font-sans px-4">
-      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 border border-blue-100 backdrop-blur-md bg-opacity-90">
-        <div className="text-center mb-6">
+    <div className="relative min-h-screen flex items-center justify-center font-sans px-4 bg-background text-foreground">
+      {/* Themed background layers */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#fcdfff] via-white to-[#c5d2ff] dark:hidden" />
+      <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
+
+      {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
+
+      <Card className="w-full max-w-md border border-border shadow-sm">
+        <CardHeader className="text-center">
           <img
             src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
-            className="w-16 h-16 mx-auto rounded-full border border-blue-300"
+            className="w-16 h-16 mx-auto rounded-full border border-border"
             alt="User"
           />
-          <h2 className="text-2xl font-semibold mt-4 text-gray-800">Student Login</h2>
-          <p className="text-sm text-gray-500">Sign in to your dashboard</p>
-        </div>
-
-        <form onSubmit={(e) => { e.preventDefault(); login(); }} className="space-y-4">
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-
-          <div className="relative">
-            <User className="absolute top-3 left-3 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Roll Number"
-              value={roll}
-              onChange={(e) => setRoll(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="relative">
-            <Lock className="absolute top-3 left-3 text-gray-400" size={18} />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              autoComplete="current-password"
-              onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="text-right text-sm text-blue-500 cursor-pointer" onClick={() => setShowForgotPasswordPopup(true)}>
-            Forgot password?
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 transition text-white rounded-lg font-semibold"
+          <CardTitle className="text-2xl mt-2">Student Login</CardTitle>
+          <CardDescription>Sign in to your dashboard</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              login();
+            }}
+            className="space-y-4"
           >
-            {loading ? "Verifying..." : "Login"}
-          </button>
-        </form>
-      </div>
+            {error && <div className="text-red-500 text-sm">{error}</div>}
 
-      {/* Change Password Popup */}
-      {changePasswordPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
-          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-lg">
-            <h3 className="text-lg font-bold mb-4 text-gray-800">Set New Password</h3>
-            <input
+            <div className="relative">
+              <User className="absolute top-3 left-3 text-muted-foreground" size={18} />
+              <Input
+                type="text"
+                placeholder="Roll Number"
+                value={roll}
+                onChange={(e) => setRoll(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            <div className="relative">
+              <Lock className="absolute top-3 left-3 text-muted-foreground" size={18} />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                autoComplete="current-password"
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <Button type="button" variant="link" className="px-0" onClick={() => setShowForgotPasswordPopup(true)}>
+                Forgot password?
+              </Button>
+            </div>
+
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Verifying..." : "Login"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Change Password Dialog */}
+      <Dialog open={changePasswordPopup} onOpenChange={setChangePasswordPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Set New Password</DialogTitle>
+            <DialogDescription>Choose a strong password for your account.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
               type="password"
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full mb-3 p-2 border rounded"
             />
-            <input
+            <Input
               type="password"
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full mb-3 p-2 border rounded"
             />
-            <button
-              onClick={changePassword}
-              className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded"
-            >
-              Submit
-            </button>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button onClick={changePassword} className="w-full">Submit</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {/* Update Profile Popup */}
-      {updateProfilePopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
-          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-lg space-y-3">
-            <h3 className="text-lg font-bold text-gray-800">Update Profile</h3>
-            <input
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Contact"
-              value={contact}
-              onChange={(e) => setContact(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full p-2 border rounded"
-            >
-              <option value="">Select Role</option>
-              <option value="leader">Team Leader</option>
-              <option value="member">Team Member</option>
-            </select>
-            <button
-              onClick={handleProfileUpdate}
-              className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
-              Update
-            </button>
+      {/* Update Profile Dialog */}
+      <Dialog open={updateProfilePopup} onOpenChange={setUpdateProfilePopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Profile</DialogTitle>
+            <DialogDescription>Complete your profile to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input type="text" placeholder="Contact" value={contact} onChange={(e) => setContact(e.target.value)} />
+            <Input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="leader">Team Leader</SelectItem>
+                <SelectItem value="member">Team Member</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button onClick={handleProfileUpdate} className="w-full">Update</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {/* Forgot Password Popup */}
-      {showForgotPasswordPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
-          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-lg">
-            <h3 className="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">
-              <MailCheck size={20} /> Forgot Password
-            </h3>
-            <p className="text-sm mb-3 text-gray-600">
+      {/* Forgot Password Dialog */}
+      <Dialog open={showForgotPasswordPopup} onOpenChange={setShowForgotPasswordPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><MailCheck size={18} /> Forgot Password</DialogTitle>
+            <DialogDescription>
               Enter your official email. Admin will verify and reset your password.
-            </p>
-            <input
-              type="email"
-              placeholder="Enter email"
-              value={forgotPasswordEmail}
-              onChange={(e) => setForgotPasswordEmail(e.target.value)}
-              className="w-full mb-4 p-2 border rounded"
-            />
-            <button
-              onClick={handleForgotPassword}
-              className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
-              Request Reset
-            </button>
-          </div>
-        </div>
-      )}
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            type="email"
+            placeholder="Enter email"
+            value={forgotPasswordEmail}
+            onChange={(e) => setForgotPasswordEmail(e.target.value)}
+          />
+          <DialogFooter>
+            <Button onClick={handleForgotPassword} className="w-full">Request Reset</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

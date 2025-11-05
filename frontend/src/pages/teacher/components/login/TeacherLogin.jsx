@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const TeacherLogin = () => {
   const [email, setEmail] = useState("");
@@ -41,63 +44,59 @@ const TeacherLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#cbd8ff] via-[#ffffff] to-[#ffcffa] font-sans">
-      <div className="w-full max-w-md bg-white/90 backdrop-blur-md border border-gray-300 rounded-xl shadow-lg px-8 py-10">
-        <div className="flex flex-col items-center mb-6">
+    <div className="relative min-h-screen flex items-center justify-center font-sans bg-background text-foreground">
+      {/* Themed background layers */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#cbd8ff] via-white to-[#ffcffa] dark:hidden" />
+      <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
+
+      {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
+
+      <Card className="w-full max-w-md border border-border shadow-sm p-6">
+        <CardHeader className="items-center text-center">
           <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS9WDX7JlmoXx1-KXqPeJAwiS0xWGDmjBEWw&s"
             alt="Logo"
-            className="w-20 h-20 mb-3 rounded-full shadow-md"
+            className="w-16 h-16 rounded-full border border-border"
           />
-          <h1 className="text-2xl font-semibold text-gray-800">Welcome back!</h1>
-          <p className="text-gray-500 text-sm">Sign in to your teacher account</p>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2">
-              <Mail className="w-5 h-5 text-gray-400 mr-2" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full focus:outline-none text-sm bg-transparent"
-              />
+          <CardTitle className="text-2xl">Welcome back!</CardTitle>
+          <CardDescription>Sign in to your teacher account</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Email</label>
+              <div className="relative">
+                <Mail className="absolute top-3 left-3 text-muted-foreground" size={18} />
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="pl-10"
+                />
+              </div>
+              {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
             </div>
-            {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2">
-              <Lock className="w-5 h-5 text-gray-400 mr-2" />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="w-full focus:outline-none text-sm bg-transparent"
-              />
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Password</label>
+              <div className="relative">
+                <Lock className="absolute top-3 left-3 text-muted-foreground" size={18} />
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="pl-10"
+                />
+              </div>
+              {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
             </div>
-            {passwordError && (
-              <p className="text-red-500 text-sm mt-1">{passwordError}</p>
-            )}
-          </div>
 
-          <button
-            type="submit"
-            className="w-full mt-4 py-2 bg-black text-white rounded-md font-semibold hover:bg-gray-900 transition duration-200"
-          >
-            Sign in
-          </button>
-        </form>
-      </div>
+            <Button type="submit" className="w-full mt-2">Sign in</Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

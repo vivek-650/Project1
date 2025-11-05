@@ -1,7 +1,11 @@
-// frontend/src/components/team/CreateTeamForm.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { UserPlus, Loader2 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const emptyMember = { roll: "", name: "", email: "" };
 
@@ -10,20 +14,70 @@ const CreateTeamForm = ({ onCreated }) => {
   const [members, setMembers] = useState([
     { ...emptyMember },
     { ...emptyMember },
-    { ...emptyMember }
+    { ...emptyMember },
   ]);
+  const [students, setStudents] = useState([]); // list from backend
+  const [studentsLoading, setStudentsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [acceptedRolls, setAcceptedRolls] = useState(new Set());
 
   const setMemberField = (idx, field, value) => {
     const copy = [...members];
-    copy[idx] = { ...copy[idx], [field]: value };
+    // If user selected a roll from dropdown, auto-fill name & email from students list
+    if (field === "roll") {
+      const selectedRoll = value;
+      const student = students.find((s) => String(s.roll) === String(selectedRoll));
+      if (student) {
+        copy[idx] = {
+          ...copy[idx],
+          roll: String(student.roll),
+          name: student.name || student.fullName || student.email || "",
+          email: student.email || "",
+        };
+      } else {
+        copy[idx] = { ...copy[idx], roll: value };
+      }
+    } else {
+      copy[idx] = { ...copy[idx], [field]: value };
+    }
     setMembers(copy);
   };
 
+  // Fetch students (rolls) for dropdown
+  useEffect(() => {
+    let mounted = true;
+    const fetchStudents = async () => {
+      try {
+        setStudentsLoading(true);
+        const [usersRes, acceptedRes] = await Promise.all([
+          axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/users`),
+          axios.get(`${import.meta.env.VITE_BASE_URL}/api/team/accepted-members`),
+        ]);
+        if (!mounted) return;
+        // Expecting array of student docs with at least roll and email/name
+        const all = Array.isArray(usersRes.data) ? usersRes.data : [];
+        // Only include active students
+        const active = all.filter((s) => Boolean(s.isActive));
+        setStudents(active);
+        const accepted = Array.isArray(acceptedRes.data?.rolls) ? acceptedRes.data.rolls : [];
+        setAcceptedRolls(new Set(accepted.map((r) => String(r))));
+      } catch (err) {
+        console.error("Failed to fetch students:", err.message);
+        setStudents([]);
+      } finally {
+        if (mounted) setStudentsLoading(false);
+      }
+    };
+    fetchStudents();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const validate = () => {
-    const rolls = members.map((m) => m.roll.trim());
+    const rolls = members.map((m) => String(m.roll).trim());
     if (rolls.some((r) => r === "")) {
       setError("All member roll numbers are required.");
       return false;
@@ -36,8 +90,9 @@ const CreateTeamForm = ({ onCreated }) => {
       setError("Leader's own roll should not be included in invited members.");
       return false;
     }
-    if (members.some((m) => !m.name.trim() || !m.email.trim())) {
-      setError("All member names and emails are required.");
+    // Ensure name & email are present (they should be auto-filled when a roll is chosen)
+    if (members.some((m) => !String(m.name).trim() || !String(m.email).trim())) {
+      setError("Selected students must have name and email in the database.");
       return false;
     }
     setError("");
@@ -65,71 +120,159 @@ const CreateTeamForm = ({ onCreated }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2 mb-4">
-        <UserPlus className="w-5 h-5 text-blue-500" />
-        Create Team <span className="text-gray-500 text-sm">(fill 3 members)</span>
-      </h3>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <UserPlus className="w-5 h-5 text-primary" />
+          <span>Create New Team</span>
+        </CardTitle>
+        <CardDescription>
+          Select 3 team members to send invitations
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {members.map((m, i) => (
+            <Card
+              key={i}
+              className="bg-muted/30"
+            >
+              <CardContent className="pt-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                      {i + 1}
+                    </div>
+                    <span className="font-medium text-foreground text-sm">Member {i + 1}</span>
+                  </div>
+                  {m.roll && (
+                    <Badge 
+                      variant="secondary"
+                      className="text-xs"
+                    >
+                      {m.roll}
+                    </Badge>
+                  )}
+                </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {members.map((m, i) => (
-          <div
-            key={i}
-            className="p-4 rounded-lg bg-gray-50 border border-gray-200 shadow-sm hover:shadow-md transition"
-          >
-            <div className="text-sm font-medium mb-3 text-gray-600">
-              Member {i + 1}
+                {studentsLoading ? (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    <span>Loading students...</span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground">
+                        Select Student
+                      </label>
+                      <Select
+                        value={m.roll}
+                        onValueChange={(value) => setMemberField(i, "roll", value)}
+                      >
+                        <SelectTrigger className="cursor-pointer">
+                          <SelectValue placeholder="Choose roll number" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {students
+                            .filter((s) => String(s.roll) !== String(roll))
+                            .map((s) => {
+                              const sRoll = String(s.roll);
+                              const alreadyPicked = members.some((mm, idx) => idx !== i && String(mm.roll) === sRoll);
+                              const inTeam = Boolean(s.teamId);
+                              const hasAcceptedElsewhere = acceptedRolls.has(sRoll);
+                              const disabled = alreadyPicked || inTeam || hasAcceptedElsewhere;
+                              return (
+                                <SelectItem
+                                  key={s.roll}
+                                  value={s.roll}
+                                  disabled={disabled}
+                                  className={disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}
+                                >
+                                  <div className="flex items-center gap-2 w-full">
+                                    <span className="font-medium">{s.roll}</span>
+                                    {s.name && <span className="text-muted-foreground text-sm">• {s.name}</span>}
+                                    {inTeam && (
+                                      <Badge variant="secondary" className="ml-auto text-foreground/80">In team</Badge>
+                                    )}
+                                    {!inTeam && hasAcceptedElsewhere && (
+                                      <Badge variant="outline" className="ml-auto bg-amber-50 text-amber-700 border-amber-200">Accepted</Badge>
+                                    )}
+                                    {alreadyPicked && !inTeam && !hasAcceptedElsewhere && (
+                                      <Badge variant="outline" className="ml-auto">Selected</Badge>
+                                    )}
+                                  </div>
+                                </SelectItem>
+                              );
+                            })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground">
+                        Full Name
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Auto-filled from selection"
+                        value={m.name}
+                        readOnly
+                        className="bg-muted/50"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground">
+                        Email Address
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder="Auto-filled from selection"
+                        value={m.email}
+                        readOnly
+                        className="bg-muted/50"
+                      />
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+
+          {error && (
+            <div className="p-3 rounded-lg border border-destructive/50 bg-destructive/5">
+              <p className="text-sm text-destructive">{error}</p>
             </div>
-
-            <input
-              type="text"
-              className="w-full mb-2 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Roll Number"
-              value={m.roll}
-              onChange={(e) => setMemberField(i, "roll", e.target.value)}
-            />
-            <input
-              type="text"
-              className="w-full mb-2 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Full Name"
-              value={m.name}
-              onChange={(e) => setMemberField(i, "name", e.target.value)}
-            />
-            <input
-              type="email"
-              className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Email Address"
-              value={m.email}
-              onChange={(e) => setMemberField(i, "email", e.target.value)}
-            />
-          </div>
-        ))}
-
-        {error && (
-          <div className="text-red-600 bg-red-50 border border-red-200 p-2 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
-        {message && (
-          <div className="text-green-600 bg-green-50 border border-green-200 p-2 rounded-lg text-sm">
-            {message}
-          </div>
-        )}
-
-        <button
-          disabled={loading}
-          className="w-full py-2 rounded-lg bg-blue-600 text-white font-medium flex justify-center items-center gap-2 hover:bg-blue-700 transition disabled:opacity-50"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="animate-spin w-5 h-5" /> Creating...
-            </>
-          ) : (
-            "Create Team (send invites)"
           )}
-        </button>
-      </form>
-    </div>
+          
+          {message && (
+            <div className="p-3 rounded-lg border border-emerald-200 bg-emerald-50">
+              <p className="text-sm text-emerald-700">{message}</p>
+            </div>
+          )}
+
+          <Button 
+            type="submit" 
+            disabled={loading || studentsLoading} 
+            className="w-full"
+            size="lg"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin w-4 h-4 mr-2" />
+                Creating Team...
+              </>
+            ) : (
+              <>
+                <UserPlus className="w-4 h-4 mr-2" />
+                Create Team & Send Invitations
+              </>
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 
