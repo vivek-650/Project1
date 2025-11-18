@@ -2,10 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Users, FileCheck, Bell, Settings } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const name = sessionStorage.getItem("name") || "Teacher";
+  const [studentCount, setStudentCount] = useState("-");
+  const [teamCount, setTeamCount] = useState("-");
+  const [announcements, setAnnouncements] = useState([]);
 
   const quickActions = [
     {
@@ -31,18 +35,57 @@ const Dashboard = () => {
     },
   ];
 
+  //get teams count
+  const fetchCountTeams = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/teams`);
+      if (!response.ok) throw new Error("Failed to fetch teams");
+      const data = await response.json();
+      // console.log("Fetched teams count:", data.count);
+      setTeamCount(data.count);
+    } catch (error) {
+      console.error("Error fetching teams count:", error);
+    }
+  };
+
+  //fetch students data
+  const fetchCountStudents = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/users/count`);
+      if (!response.ok) throw new Error("Failed to fetch students");
+      const data = await response.json();
+      // console.log("Fetched students count:", data);
+      setStudentCount(data.count);
+    } catch (error) {
+      console.error("Error fetching students count:", error);
+    }
+  };
+
+  //fetch announcements data
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/notices`);
+      if (!response.ok) throw new Error("Failed to fetch announcements");
+      const data = await response.json();
+      // console.log("Fetched announcements:", data);
+      setAnnouncements(data);
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+    }
+  };
+
+  useEffect(() => {
+    Promise.all([fetchCountStudents(), fetchCountTeams(), fetchAnnouncements()]);
+  }, []);
+
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-foreground">
-              Welcome, {name}
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Teacher Dashboard
-            </p>
+            <h1 className="text-4xl font-bold text-foreground">Welcome, {name}</h1>
+            <p className="text-muted-foreground mt-1">Teacher Dashboard</p>
           </div>
           <Button variant="outline" onClick={() => navigate("/supervisor/dashboard/settings")}>
             <Settings className="mr-2 h-4 w-4" />
@@ -51,17 +94,15 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Students</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Active student accounts
-              </p>
+              <div className="text-2xl font-bold">{studentCount}</div>
+              <p className="text-xs text-muted-foreground mt-1">Active student accounts</p>
             </CardContent>
           </Card>
 
@@ -71,25 +112,21 @@ const Dashboard = () => {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Formed teams
-              </p>
+              <div className="text-2xl font-bold">{teamCount}</div>
+              <p className="text-xs text-muted-foreground mt-1">Formed teams</p>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
               <FileCheck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Awaiting approval
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Awaiting approval</p>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -97,10 +134,8 @@ const Dashboard = () => {
               <Bell className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Posted notices
-              </p>
+              <div className="text-2xl font-bold">{announcements.length}</div>
+              <p className="text-xs text-muted-foreground mt-1">Posted notices</p>
             </CardContent>
           </Card>
         </div>
@@ -109,9 +144,7 @@ const Dashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Access frequently used management tools
-            </CardDescription>
+            <CardDescription>Access frequently used management tools</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -127,9 +160,7 @@ const Dashboard = () => {
                     <Icon className={`h-8 w-8 mb-3 text-primary`} />
                     <div className="text-left">
                       <div className="font-semibold text-base">{action.title}</div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {action.description}
-                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">{action.description}</div>
                     </div>
                   </Button>
                 );
@@ -145,9 +176,7 @@ const Dashboard = () => {
             <CardDescription>Latest system updates and changes</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-muted-foreground">
-              No recent activity to display
-            </div>
+            <div className="text-sm text-muted-foreground">No recent activity to display</div>
           </CardContent>
         </Card>
       </div>

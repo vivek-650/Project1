@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import CreateTeamForm from '../teamFormation/CreateTeamForm';
+import CreateTeamForm from "../teamFormation/CreateTeamForm";
 import TeamRequests from "../teamFormation/TeamRequests";
 import LeaderFinalize from "../teamFormation/LeaderFinalize";
 import axios from "axios";
-import { Users, Crown, Loader2, Shield } from "lucide-react";
+import { Users, Crown, Loader2, Shield, RefreshCcw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -42,7 +42,9 @@ const TeamFormation = () => {
         const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/team/requests/${roll}`);
         const invites = Array.isArray(res.data?.invitations) ? res.data.invitations : [];
         // Find first invite where THIS student's status is accepted
-        const mine = invites.find((t) => t.members?.some((m) => m.roll === roll && m.status === "accepted"));
+        const mine = invites.find((t) =>
+          t.members?.some((m) => m.roll === roll && m.status === "accepted")
+        );
         if (active) setAcceptedInvite(mine || null);
       } catch (e) {
         console.error(e);
@@ -61,7 +63,9 @@ const TeamFormation = () => {
     let active = true;
     (async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/user-details/${encodeURIComponent(email)}`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/user/user-details/${encodeURIComponent(email)}`
+        );
         const list = Array.isArray(res.data) ? res.data : [];
         const me = list[0];
         if (active) setRole(me?.role || null);
@@ -71,7 +75,9 @@ const TeamFormation = () => {
         // no-op
       }
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
@@ -82,9 +88,14 @@ const TeamFormation = () => {
           <Users className="w-8 h-8 text-primary" />
           Team Formation
         </h1>
-        <p className="text-muted-foreground">
-          Create or join a team to collaborate on projects
-        </p>
+        <p className="text-muted-foreground">Create or join a team to collaborate on projects</p>
+
+        {/* refresh button */}
+        <div className="mt-4">
+          <button onClick={refresh} className="text-sm text-primary hover:underline">
+            Refresh <RefreshCcw className="w-4 h-4 inline-block ml-1" />
+          </button>
+        </div>
       </div>
 
       {!roll && (
@@ -106,8 +117,10 @@ const TeamFormation = () => {
         </Card>
       )}
 
-      {!loading && !team && !acceptedInvite && (
-        role === "leader" ? (
+      {!loading &&
+        !team &&
+        !acceptedInvite &&
+        (role === "leader" ? (
           <div className="grid lg:grid-cols-2 gap-6">
             <CreateTeamForm onCreated={refresh} />
             <TeamRequests onResponded={refresh} />
@@ -116,8 +129,7 @@ const TeamFormation = () => {
           <div className="grid lg:grid-cols-1 gap-6">
             <TeamRequests onResponded={refresh} />
           </div>
-        )
-      )}
+        ))}
 
       {!loading && team && (
         <div className="space-y-6">
@@ -129,11 +141,12 @@ const TeamFormation = () => {
                   <Shield className="w-5 h-5 text-primary" />
                   <span>Your Team</span>
                 </div>
-                <Badge 
+                <Badge
                   variant={team.status === "pending" ? "secondary" : "default"}
-                  className={team.status === "pending" 
-                    ? "bg-amber-100 text-amber-800 border-amber-200" 
-                    : "bg-emerald-100 text-emerald-800 border-emerald-200"
+                  className={
+                    team.status === "pending"
+                      ? "bg-amber-100 text-amber-800 border-amber-200"
+                      : "bg-emerald-100 text-emerald-800 border-emerald-200"
                   }
                 >
                   {team.status.toUpperCase()}
@@ -145,21 +158,16 @@ const TeamFormation = () => {
               {/* Members Grid */}
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {team.members?.map((member) => (
-                  <Card 
-                    key={member.roll}
-                    className="transition-all hover:shadow-sm"
-                  >
+                  <Card key={member.roll} className="transition-all hover:shadow-sm">
                     <CardContent className="pt-6">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-foreground truncate">
-                            {member.name}
-                          </h3>
+                          <h3 className="font-medium text-foreground truncate">{member.name}</h3>
                           <p className="text-sm text-muted-foreground">{member.roll}</p>
                         </div>
 
                         {team.leaderRoll === member.roll && (
-                          <Badge 
+                          <Badge
                             variant="outline"
                             className="bg-amber-50 text-amber-700 border-amber-200 shrink-0 ml-2"
                           >
@@ -172,9 +180,10 @@ const TeamFormation = () => {
                       {/* Status Badge */}
                       <Badge
                         variant="outline"
-                        className={member.status === "accepted"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                          : "bg-amber-50 text-amber-700 border-amber-200"
+                        className={
+                          member.status === "accepted"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-amber-50 text-amber-700 border-amber-200"
                         }
                       >
                         {member.status}

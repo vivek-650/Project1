@@ -8,10 +8,7 @@ router.post("/login", async (req, res) => {
   try {
     const { roll, password } = req.body;
     console.log("Roll: ", roll, " Pass: ", password);
-    const userSnapshot = await db
-      .collection("students")
-      .where("roll", "==", roll)
-      .get();
+    const userSnapshot = await db.collection("students").where("roll", "==", roll).get();
 
     if (userSnapshot.empty) {
       return res.status(404).json({ message: "User not found" });
@@ -105,22 +102,30 @@ router.post("/add-recipe", async (req, res) => {
     }
 
     const batch = db.batch();
-
+    const createdIds = [];
     recipes.forEach((recipe) => {
-      const { title, ingredients, instructions, explanation } = recipe;
+      const {
+        title,
+        ingredients = [],
+        instructions = "",
+        explanation = "",
+        uploaded = false,
+      } = recipe;
       const recipeRef = db.collection("recipes").doc();
+      createdIds.push(recipeRef.id);
       batch.set(recipeRef, {
         email,
         title,
         ingredients,
         instructions,
         explanation,
+        uploaded: Boolean(uploaded),
+        createdAt: new Date(),
       });
     });
 
     await batch.commit();
-
-    res.json({ message: "Recipes added successfully" });
+    res.json({ message: "Recipes added successfully", ids: createdIds });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -130,13 +135,57 @@ router.post("/add-recipe", async (req, res) => {
 router.get("/recipes/:email", async (req, res) => {
   try {
     const { email } = req.params;
-    const recipesSnapshot = await db
+    const recipesSnapshot = await db.collection("recipes").where("email", "==", email).get();
+    const recipes = recipesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    res.json({ recipes });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 2a. Get Draft Recipes (uploaded === false)
+router.get("/recipes/:email/drafts", async (req, res) => {
+  try {
+    const { email } = req.params;
+    const draftSnapshot = await db
       .collection("recipes")
       .where("email", "==", email)
+      .where("uploaded", "==", false)
       .get();
-    const recipes = recipesSnapshot.docs.map((doc) => doc.data());
-    console.log(recipes[0].recipes);
-    res.json(recipes[0].recipes);
+    const drafts = draftSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    res.json({ drafts });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 2b. Get Uploaded Recipes (uploaded === true)
+router.get("/recipes/:email/uploaded", async (req, res) => {
+  try {
+    const { email } = req.params;
+    const uploadedSnapshot = await db
+      .collection("recipes")
+      .where("email", "==", email)
+      .where("uploaded", "==", true)
+      .get();
+    const uploaded = uploadedSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    res.json({ uploaded });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 2c. Mark a recipe as uploaded
+router.patch("/recipes/:id/upload", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const recipeRef = db.collection("recipes").doc(id);
+    const recipeDoc = await recipeRef.get();
+    if (!recipeDoc.exists) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+    await recipeRef.update({ uploaded: true, uploadedAt: new Date() });
+    res.json({ message: "Recipe marked as uploaded" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -145,10 +194,7 @@ router.get("/recipes/:email", async (req, res) => {
 router.get("/user-details/:email", async (req, res) => {
   try {
     const { email } = req.params;
-    const recipesSnapshot = await db
-      .collection("students")
-      .where("email", "==", email)
-      .get();
+    const recipesSnapshot = await db.collection("students").where("email", "==", email).get();
     const userDetails = recipesSnapshot.docs.map((doc) => doc.data());
     console.log(userDetails);
     res.json(userDetails);
@@ -161,10 +207,7 @@ router.get("/user-details/:email", async (req, res) => {
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email, name } = req.body;
-    const userSnapshot = await db
-      .collection("students")
-      .where("email", "==", email)
-      .get();
+    const userSnapshot = await db.collection("students").where("email", "==", email).get();
 
     if (userSnapshot.empty) {
       return res.status(404).json({ message: "User not found." });
@@ -191,11 +234,7 @@ router.post("/create-team", async (req, res) => {
     return res.status(400).json({ message: "Roll number is required" });
   }
 
-  const studentSnap = await db
-    .collection("students")
-    .where("roll", "==", roll)
-    .limit(1)
-    .get();
+  const studentSnap = await db.collection("students").where("roll", "==", roll).limit(1).get();
 
   if (studentSnap.empty) {
     return res.status(404).json({ message: "Student not found" });

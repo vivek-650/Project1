@@ -12,10 +12,9 @@ const TeacherLogin = () => {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
-  const validateEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toLowerCase());
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toLowerCase());
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     let isValid = true;
 
@@ -37,9 +36,26 @@ const TeacherLogin = () => {
     }
 
     if (isValid) {
-      sessionStorage.setItem("supervisorToken", "SupervisorToken001");
-      alert("Login successful!");
-      navigate("/supervisor/dashboard");
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/supervisor/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Login failed");
+        }
+
+        const data = await response.json();
+        sessionStorage.setItem("supervisorToken", data.token);
+        alert("Login successful!");
+        navigate("/supervisor/dashboard");
+      } catch (error) {
+        console.error("Login error:", error);
+      }
     }
   };
 
@@ -59,7 +75,7 @@ const TeacherLogin = () => {
             className="w-16 h-16 rounded-full border border-border"
           />
           <CardTitle className="text-2xl">Welcome back!</CardTitle>
-          <CardDescription>Sign in to your teacher account</CardDescription>
+          <CardDescription>Sign in to your supervisor account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -93,7 +109,9 @@ const TeacherLogin = () => {
               {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
             </div>
 
-            <Button type="submit" className="w-full mt-2">Sign in</Button>
+            <Button type="submit" onClick={handleLogin} className="w-full mt-2">
+              Sign in
+            </Button>
           </form>
         </CardContent>
       </Card>

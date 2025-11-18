@@ -1,101 +1,95 @@
-import  { useState } from "react";
+import { useState } from "react";
 import * as XLSX from "xlsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const AddUsers = () => {
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    recipeCount: "",
-  });
+  const [user, setUser] = useState({ name: "", email: "", phone: "", recipeCount: "" });
   const [users, setUsers] = useState(null);
-
-  // {
-  //   "name": "User1",
-  //   "email": "dummy@gmail.com",
-  //   "phone": 1234567890,
-  //   "isActive": true,
-  //   "recipeCount": 10
-  // }
+  const [submittingSingle, setSubmittingSingle] = useState(false);
+  const [submittingBulk, setSubmittingBulk] = useState(false);
+  const [confirmBulkOpen, setConfirmBulkOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const createUser = async () => {
     try {
-      const userData = user;
-      console.log("User Data: ", userData);
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/admin/create-user`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify(userData),
-        }
-      );
+      setSubmittingSingle(true);
+      setMessage("");
+      setError("");
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/create-user`, {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: JSON.stringify(user),
+      });
+      const data = await response.json().catch(() => ({}));
       if (response.ok) {
-        const data = await response.json();
-        alert(data.message);
-        console.log("Data :", data);
+        setMessage(data?.message || "User created");
+        setUser({ name: "", email: "", phone: "", recipeCount: "" });
       } else {
-        console.log("Error in create user");
+        setError(data?.message || "Failed to create user");
       }
-    } catch (error) {
-      console.log("Error during create user: ", error);
+    } catch (e) {
+      setError("Network error creating user");
+    } finally {
+      setSubmittingSingle(false);
     }
   };
 
   const createMultipleUser = async () => {
     try {
-      const usersData = users;
-      console.log("Users Data: ", usersData);
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/admin/create-users`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify(usersData),
-        }
-      );
-      const data = await response.json();
+      setSubmittingBulk(true);
+      setMessage("");
+      setError("");
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/create-users`, {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: JSON.stringify(users),
+      });
+      const data = await response.json().catch(() => ({}));
       if (response.ok) {
-        alert(data.message);
-        console.log("Data :", data);
+        setMessage(data?.message || "Users created");
+        setUsers(null);
       } else {
-        console.log("Error in create multiple users", data);
+        setError(data?.message || "Failed to create users");
       }
-    } catch (error) {
-      console.log("Error during create multiple users api: ", error);
+    } catch (e) {
+      setError("Network error creating users");
+    } finally {
+      setSubmittingBulk(false);
+      setConfirmBulkOpen(false);
     }
-  };
-
-  const handleAddUser = () => {
-    createUser();
-    setUser({
-      name: "",
-      email: "",
-      phone: "",
-      recipeCount: "",
-    });
-  };
-
-  const handleCreateMultipleUser = () => {
-    createMultipleUser();
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
+    setUser((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
+    if (!file) return;
     const reader = new FileReader();
-
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: "array" });
@@ -103,167 +97,169 @@ export const AddUsers = () => {
       const sheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(sheet);
       setUsers(jsonData);
-      console.log(jsonData);
     };
-
     reader.readAsArrayBuffer(file);
   };
-  const styles = {
-    container: {
-      padding: "20px",
-      fontFamily: "'Arial', sans-serif",
-    },
-    header: {
-      textAlign: "center",
-      color: "#333",
-    },
-    formContainer: {
-      marginBottom: "20px",
-    },
-    form: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "10px",
-    },
-    label: {
-      display: "flex",
-      flexDirection: "column",
-      fontSize: "16px",
-      color: "#555",
-    },
-    input: {
-      padding: "8px",
-      fontSize: "14px",
-      borderRadius: "4px",
-      border: "1px solid #ccc",
-      marginTop: "5px",
-    },
-    button: {
-      padding: "10px 15px",
-      fontSize: "16px",
-      color: "#fff",
-      backgroundColor: "black",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-      marginTop: "10px",
-    },
-    uploadContainer: {
-      marginBottom: "20px",
-    },
-    fileInput: {
-      padding: "10px",
-      fontSize: "14px",
-    },
-    table: {
-      width: "100%",
-      borderCollapse: "collapse",
-      marginTop: "20px",
-    },
-    tableHeader: {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left",
-      backgroundColor: "#f2f2f2",
-    },
-    tableCell: {
-      borderBottom: "1px solid #ddd",
-      padding: "10px",
-    },
-  };
+
+  const usersCount = Array.isArray(users) ? users.length : 0;
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>Add Users</h1>
-      <div style={styles.formContainer}>
-        <form onSubmit={(e) => e.preventDefault()} style={styles.form}>
-          <label style={styles.label}>
-            User Name:
-            <input
-              type="text"
-              name="name"
-              value={user.name}
-              onChange={handleChange}
-              placeholder="Enter User Name"
-              style={styles.input}
-            />
-          </label>
-          <label style={styles.label}>
-            Email:
-            <input
-              type="text"
-              name="email"
-              value={user.email}
-              onChange={handleChange}
-              placeholder="Enter User Email"
-              style={styles.input}
-            />
-          </label>
-          <label style={styles.label}>
-            Phone:
-            <input
-              type="text"
-              name="phone"
-              value={user.phone}
-              onChange={handleChange}
-              placeholder="Enter User Number"
-              style={styles.input}
-            />
-          </label>
-          <label style={styles.label}>
-            Recipe Count:
-            <input
-              type="text"
-              name="recipeCount"
-              value={user.recipeCount}
-              onChange={handleChange}
-              placeholder="Enter Recipe Count"
-              style={styles.input}
-            />
-          </label>
-          <button type="button" onClick={handleAddUser} style={styles.button}>
-            Add
-          </button>
-        </form>
+    <div className="space-y-6 p-5">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold tracking-tight">Add Users</h1>
       </div>
-      <br />
-      <hr />
-      <br />
-      <div style={styles.uploadContainer}>
-        <h3>Upload excel sheet of all users to create</h3>
-        <input type="file" onChange={handleFileUpload} style={styles.fileInput} />
-      </div>
-      <br />
-      <div>
-        <h2>Users in File</h2>
-        {users && (
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.tableHeader}>Name</th>
-                <th style={styles.tableHeader}>Email</th>
-                <th style={styles.tableHeader}>Phone No</th>
-                <th style={styles.tableHeader}>Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((item, index) => (
-                <tr key={index}>
-                  <td style={styles.tableCell}>{item.name}</td>
-                  <td style={styles.tableCell}>{item.email}</td>
-                  <td style={styles.tableCell}>{item.phone}</td>
-                  <td style={{ ...styles.tableCell, textAlign: "center" }}>{item.recipeCount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-        <button onClick={handleCreateMultipleUser} style={styles.button}>
-          Create Users
-        </button>
+
+      {message && (
+        <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-700">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Single user card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Create Single User</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">User Name</label>
+                <Input
+                  name="name"
+                  placeholder="Enter user name"
+                  value={user.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  name="email"
+                  type="email"
+                  placeholder="Enter user email"
+                  value={user.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Phone</label>
+                <Input
+                  name="phone"
+                  inputMode="numeric"
+                  placeholder="Enter phone number"
+                  value={user.phone}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Recipe Count</label>
+                <Input
+                  name="recipeCount"
+                  type="number"
+                  min={0}
+                  placeholder="Enter recipe count"
+                  value={user.recipeCount}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  onClick={createUser}
+                  disabled={submittingSingle || !user.name || !user.email}
+                >
+                  {submittingSingle ? "Adding..." : "Add User"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Bulk users card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Bulk Create via Excel</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Upload .xlsx file</label>
+                <Input type="file" accept=".xlsx,.xls" onChange={handleFileUpload} />
+                <p className="text-xs text-muted-foreground">
+                  Columns: name, email, phone, recipeCount
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Users detected</span>
+                <span className="font-medium">{usersCount}</span>
+              </div>
+
+              {usersCount > 0 && (
+                <ScrollArea className="h-64 rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead className="text-right">Count</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((u, i) => (
+                        <TableRow key={i}>
+                          <TableCell className="truncate">{u.name}</TableCell>
+                          <TableCell className="truncate">{u.email}</TableCell>
+                          <TableCell className="truncate">{u.phone}</TableCell>
+                          <TableCell className="text-right">{u.recipeCount}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              )}
+
+              <div className="flex justify-end gap-2">
+                <Dialog open={confirmBulkOpen} onOpenChange={setConfirmBulkOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="secondary" disabled={!usersCount}>
+                      Review & Create
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create {usersCount} users?</DialogTitle>
+                      <DialogDescription>
+                        This will create all users from the uploaded file. Please ensure the columns
+                        are correct.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setConfirmBulkOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={createMultipleUser} disabled={submittingBulk}>
+                        {submittingBulk ? "Creating..." : "Confirm"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
-
-
 };

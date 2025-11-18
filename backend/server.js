@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 // Routes
 
 app.use("/api/admin", adminRoutes);
-app.use("/api/coordinator", coordinatorRoutes);
+app.use("/api/supervisor", coordinatorRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/super-admin", superAdminRoutes);

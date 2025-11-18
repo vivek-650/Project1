@@ -4,7 +4,13 @@ import { UserPlus, Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
 const emptyMember = { roll: "", name: "", email: "" };
@@ -59,8 +65,8 @@ const CreateTeamForm = ({ onCreated }) => {
         // Expecting array of student docs with at least roll and email/name
         const all = Array.isArray(usersRes.data) ? usersRes.data : [];
         // Only include active students
-        const active = all.filter((s) => Boolean(s.isActive));
-        setStudents(active);
+        // const active = all.filter((s) => Boolean(s.isActive));
+        setStudents(all);
         const accepted = Array.isArray(acceptedRes.data?.rolls) ? acceptedRes.data.rolls : [];
         setAcceptedRolls(new Set(accepted.map((r) => String(r))));
       } catch (err) {
@@ -106,10 +112,7 @@ const CreateTeamForm = ({ onCreated }) => {
     setMessage("");
     try {
       const payload = { leaderRoll: roll, members };
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/team/create`,
-        payload
-      );
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/team/create`, payload);
       setMessage(res.data.message || "Team created (pending)");
       onCreated?.();
     } catch (err) {
@@ -126,17 +129,12 @@ const CreateTeamForm = ({ onCreated }) => {
           <UserPlus className="w-5 h-5 text-primary" />
           <span>Create New Team</span>
         </CardTitle>
-        <CardDescription>
-          Select 3 team members to send invitations
-        </CardDescription>
+        <CardDescription>Select 3 team members to send invitations</CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           {members.map((m, i) => (
-            <Card
-              key={i}
-              className="bg-muted/30"
-            >
+            <Card key={i} className="bg-muted/30">
               <CardContent className="pt-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -146,10 +144,7 @@ const CreateTeamForm = ({ onCreated }) => {
                     <span className="font-medium text-foreground text-sm">Member {i + 1}</span>
                   </div>
                   {m.roll && (
-                    <Badge 
-                      variant="secondary"
-                      className="text-xs"
-                    >
+                    <Badge variant="secondary" className="text-xs">
                       {m.roll}
                     </Badge>
                   )}
@@ -178,7 +173,9 @@ const CreateTeamForm = ({ onCreated }) => {
                             .filter((s) => String(s.roll) !== String(roll))
                             .map((s) => {
                               const sRoll = String(s.roll);
-                              const alreadyPicked = members.some((mm, idx) => idx !== i && String(mm.roll) === sRoll);
+                              const alreadyPicked = members.some(
+                                (mm, idx) => idx !== i && String(mm.roll) === sRoll
+                              );
                               const inTeam = Boolean(s.teamId);
                               const hasAcceptedElsewhere = acceptedRolls.has(sRoll);
                               const disabled = alreadyPicked || inTeam || hasAcceptedElsewhere;
@@ -187,19 +184,40 @@ const CreateTeamForm = ({ onCreated }) => {
                                   key={s.roll}
                                   value={s.roll}
                                   disabled={disabled}
-                                  className={disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}
+                                  className={
+                                    disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+                                  }
                                 >
                                   <div className="flex items-center gap-2 w-full">
                                     <span className="font-medium">{s.roll}</span>
-                                    {s.name && <span className="text-muted-foreground text-sm">• {s.name}</span>}
+                                    {s.name && (
+                                      <span className="text-muted-foreground text-sm">
+                                        • {s.name}
+                                      </span>
+                                    )}
+                                    <span className="text-muted-foreground text-sm">
+                                      • {s.isActive ? "Active" : "Inactive"}
+                                    </span>
                                     {inTeam && (
-                                      <Badge variant="secondary" className="ml-auto text-foreground/80">In team</Badge>
+                                      <Badge
+                                        variant="secondary"
+                                        className="ml-auto text-foreground/80"
+                                      >
+                                        In team
+                                      </Badge>
                                     )}
                                     {!inTeam && hasAcceptedElsewhere && (
-                                      <Badge variant="outline" className="ml-auto bg-amber-50 text-amber-700 border-amber-200">Accepted</Badge>
+                                      <Badge
+                                        variant="outline"
+                                        className="ml-auto bg-amber-50 text-amber-700 border-amber-200"
+                                      >
+                                        Accepted
+                                      </Badge>
                                     )}
                                     {alreadyPicked && !inTeam && !hasAcceptedElsewhere && (
-                                      <Badge variant="outline" className="ml-auto">Selected</Badge>
+                                      <Badge variant="outline" className="ml-auto">
+                                        Selected
+                                      </Badge>
                                     )}
                                   </div>
                                 </SelectItem>
@@ -210,9 +228,7 @@ const CreateTeamForm = ({ onCreated }) => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-muted-foreground">
-                        Full Name
-                      </label>
+                      <label className="text-xs font-medium text-muted-foreground">Full Name</label>
                       <Input
                         type="text"
                         placeholder="Auto-filled from selection"
@@ -245,19 +261,14 @@ const CreateTeamForm = ({ onCreated }) => {
               <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
-          
+
           {message && (
             <div className="p-3 rounded-lg border border-emerald-200 bg-emerald-50">
               <p className="text-sm text-emerald-700">{message}</p>
             </div>
           )}
 
-          <Button 
-            type="submit" 
-            disabled={loading || studentsLoading} 
-            className="w-full"
-            size="lg"
-          >
+          <Button type="submit" disabled={loading || studentsLoading} className="w-full" size="lg">
             {loading ? (
               <>
                 <Loader2 className="animate-spin w-4 h-4 mr-2" />

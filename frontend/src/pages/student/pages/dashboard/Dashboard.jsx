@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Users, FileText, Bell, UserCircle, BookOpen, Calendar } from "lucide-react";
+import { Users, FileText, Bell, UserCircle, BookOpen, Calendar, RefreshCcw } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,35 +14,59 @@ const Dashboard = () => {
   const [team, setTeam] = useState(null);
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // Fetch team status
-        if (roll) {
-          const teamRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/team/status/${roll}`);
-          setTeam(teamRes.data.team);
-        }
-        
-        // Fetch recent notices
-        const noticesRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/super-admin/notices/students`);
-        setNotices(noticesRes.data.slice(0, 3)); // Get only 3 recent notices
-      } catch (err) {
-        console.error("Failed to fetch dashboard data:", err);
-      } finally {
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      // Fetch team status
+      if (roll) {
+        const teamRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/team/status/${roll}`);
+        setTeam(teamRes.data.team);
       }
-    };
-    
+
+      // Fetch recent notices
+      const noticesRes = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/super-admin/notices/students`
+      );
+      setNotices(noticesRes.data.slice(0, 3)); // Get only 3 recent notices
+    } catch (err) {
+      console.error("Failed to fetch dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, [roll]);
 
   const quickActions = [
-    { title: "Team Formation", description: "Create or join a team", icon: Users, path: "/student/dashboard/team-formation", color: "text-blue-500" },
-    { title: "Recipes", description: "Browse and manage recipes", icon: BookOpen, path: "/student/dashboard/recepies", color: "text-green-500" },
-    { title: "Add Recipe", description: "Submit a new recipe", icon: FileText, path: "/student/dashboard/new-recepie", color: "text-purple-500" },
-    { title: "Notices", description: "View all announcements", icon: Bell, path: "/student/notice", color: "text-orange-500" },
+    {
+      title: "Team Formation",
+      description: "Create or join a team",
+      icon: Users,
+      path: "/student/dashboard/team-formation",
+      color: "text-blue-500",
+    },
+    {
+      title: "Recipes",
+      description: "Browse and manage recipes",
+      icon: BookOpen,
+      path: "/student/dashboard/recepies",
+      color: "text-green-500",
+    },
+    {
+      title: "Add Recipe",
+      description: "Submit a new recipe",
+      icon: FileText,
+      path: "/student/dashboard/new-recepie",
+      color: "text-purple-500",
+    },
+    {
+      title: "Notices",
+      description: "View all announcements",
+      icon: Bell,
+      path: "/student/notice",
+      color: "text-orange-500",
+    },
   ];
 
   return (
@@ -53,6 +77,12 @@ const Dashboard = () => {
           <div>
             <h1 className="text-4xl font-bold text-foreground">Welcome back, {name}!</h1>
             <p className="text-muted-foreground mt-1">Roll: {roll}</p>
+            {/* refresh button */}
+            <div className="mt-4">
+              <button onClick={fetchData} className="text-sm text-primary hover:underline">
+                Refresh <RefreshCcw className="w-4 h-4 inline-block ml-1" />
+              </button>
+            </div>
           </div>
           <Button variant="outline" onClick={() => navigate("/student/dashboard/account-setting")}>
             <UserCircle className="mr-2 h-4 w-4" />
@@ -85,7 +115,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Recipes</CardTitle>
               <BookOpen className="h-4 w-4 text-muted-foreground" />
@@ -94,7 +124,7 @@ const Dashboard = () => {
               <div className="text-2xl font-bold">-</div>
               <p className="text-xs text-muted-foreground mt-1">View all recipes</p>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -160,7 +190,10 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Status</p>
-                    <Badge variant={team.status === "active" ? "default" : "secondary"} className="mt-1">
+                    <Badge
+                      variant={team.status === "active" ? "default" : "secondary"}
+                      className="mt-1"
+                    >
                       {team.status}
                     </Badge>
                   </div>
@@ -173,7 +206,10 @@ const Dashboard = () => {
                   <p className="text-sm font-medium mb-2">Members</p>
                   <div className="grid gap-2">
                     {team.members?.map((member) => (
-                      <div key={member.roll} className="flex items-center justify-between p-2 rounded-lg bg-muted">
+                      <div
+                        key={member.roll}
+                        className="flex items-center justify-between p-2 rounded-lg bg-muted"
+                      >
                         <div className="flex items-center gap-2">
                           <UserCircle className="h-5 w-5 text-muted-foreground" />
                           <div>
@@ -181,9 +217,7 @@ const Dashboard = () => {
                             <p className="text-xs text-muted-foreground">{member.roll}</p>
                           </div>
                         </div>
-                        {team.leaderRoll === member.roll && (
-                          <Badge variant="outline">Leader</Badge>
-                        )}
+                        {team.leaderRoll === member.roll && <Badge variant="outline">Leader</Badge>}
                       </div>
                     ))}
                   </div>

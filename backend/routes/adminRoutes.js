@@ -82,4 +82,47 @@ router.get("/users", async (req, res) => {
   }
 });
 
+// 4. count user
+router.get("/users/count", async (req, res) => {
+  try {
+    const usersSnapshot = await db.collection("students").get();
+    const userCount = usersSnapshot.docs.length;
+    res.json({ count: userCount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 5. get teams
+router.get("/teams", async (req, res) => {
+  try {
+    const teamsSnapshot = await db.collection("teams").get();
+    const teams = teamsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.json({
+      teams,
+      count: teams.length,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 6. Announcements
+router.post("/notices", async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    const noticeRef = db.collection("notices").doc();
+    await noticeRef.set({
+      title,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    res.status(201).json({ message: "Notice created successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

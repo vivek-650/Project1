@@ -12,8 +12,7 @@ coordinatorRoutes.post("/signup", async (req, res) => {
     const userRef = db.collection("coordinators").doc(email);
     const userDoc = await userRef.get();
 
-    if (!userDoc.exists)
-      return res.status(400).json({ error: "Coordinator not found" });
+    if (!userDoc.exists) return res.status(400).json({ error: "Coordinator not found" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await userRef.update({ password: hashedPassword, isActive: true });
@@ -28,26 +27,17 @@ coordinatorRoutes.post("/signup", async (req, res) => {
 coordinatorRoutes.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(
-      "Login attempt for:",
-      email,
-      password ? "Password provided" : "No password"
-    );
-    const userSnapshot = await db
-      .collection("coordinators")
-      .where("email", "==", email)
-      .get();
+    console.log("Login attempt for:", email, password ? "Password provided" : "No password");
+    const userSnapshot = await db.collection("coordinators").where("email", "==", email).get();
 
-    if (userSnapshot.empty)
-      return res.status(400).json({ error: "Coordinator not found" });
+    if (userSnapshot.empty) return res.status(400).json({ error: "Coordinator not found" });
 
     const user = userSnapshot.docs[0].data();
 
     // const isMatch = await bcrypt.compare(password, user.password);
     // if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    if (user.password !== password)
-      return res.status(400).json({ error: "Invalid credentials" });
+    if (user.password !== password) return res.status(400).json({ error: "Invalid credentials" });
 
     const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
       expiresIn: "1h",
@@ -66,10 +56,7 @@ coordinatorRoutes.post("/forgot-password", async (req, res) => {
     const defaultPassword = Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
-    await db
-      .collection("coordinators")
-      .doc(email)
-      .update({ password: hashedPassword });
+    await db.collection("coordinators").doc(email).update({ password: hashedPassword });
 
     res.json({ message: "Password reset. Check your email." });
   } catch (error) {

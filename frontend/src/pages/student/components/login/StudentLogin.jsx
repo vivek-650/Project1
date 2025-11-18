@@ -1,12 +1,25 @@
 /* eslint-disable */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, User, MailCheck } from "lucide-react";
+import { Lock, User, MailCheck, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const StudentLogin = () => {
   const [changePasswordPopup, setChangePasswordPopup] = useState(false);
@@ -31,16 +44,13 @@ const StudentLogin = () => {
     setLoading(true);
     try {
       const loginData = { roll, password };
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(loginData),
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
 
       const data = await response.json();
       if (response.ok) {
@@ -53,7 +63,7 @@ const StudentLogin = () => {
         sessionStorage.setItem("studentToken", data.data.token);
         sessionStorage.setItem("recipeCount", data.data.recipeCount);
         sessionStorage.setItem("email", data.data.email);
-        sessionStorage.setItem('roll', data.data.roll);
+        sessionStorage.setItem("roll", data.data.roll);
         navigate("/student/dashboard");
       } else {
         setError(data.message);
@@ -71,14 +81,11 @@ const StudentLogin = () => {
     }
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/change-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roll, newPassword }),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/change-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roll, newPassword }),
+      });
 
       const data = await res.json();
       if (res.ok) {
@@ -94,14 +101,11 @@ const StudentLogin = () => {
 
   const handleForgotPassword = async () => {
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: forgotPasswordEmail }),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotPasswordEmail }),
+      });
 
       const data = await res.json();
       if (res.ok) {
@@ -125,16 +129,13 @@ const StudentLogin = () => {
         role,
         roll,
       };
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/update-profile`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(profileData),
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/update-profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileData),
+      });
 
       const data = await response.json();
       if (response.ok) {
@@ -155,6 +156,12 @@ const StudentLogin = () => {
       {/* Themed background layers */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#fcdfff] via-white to-[#c5d2ff] dark:hidden" />
       <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
+
+      {/* back button */}
+      <Button variant="link" className="absolute top-4 left-4" onClick={() => navigate("/members")}>
+        <ArrowLeft className="mr-2" />
+        Back
+      </Button>
 
       {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
 
@@ -202,7 +209,12 @@ const StudentLogin = () => {
             </div>
 
             <div className="flex justify-end">
-              <Button type="button" variant="link" className="px-0" onClick={() => setShowForgotPasswordPopup(true)}>
+              <Button
+                type="button"
+                variant="link"
+                className="px-0"
+                onClick={() => setShowForgotPasswordPopup(true)}
+              >
                 Forgot password?
               </Button>
             </div>
@@ -236,7 +248,9 @@ const StudentLogin = () => {
             />
           </div>
           <DialogFooter>
-            <Button onClick={changePassword} className="w-full">Submit</Button>
+            <Button onClick={changePassword} className="w-full">
+              Submit
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -249,9 +263,24 @@ const StudentLogin = () => {
             <DialogDescription>Complete your profile to continue.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <Input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-            <Input type="text" placeholder="Contact" value={contact} onChange={(e) => setContact(e.target.value)} />
-            <Input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+            <Input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <Input
+              type="text"
+              placeholder="Contact"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+            />
+            <Input
+              type="text"
+              placeholder="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
             <Select value={role} onValueChange={setRole}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Role" />
@@ -263,7 +292,9 @@ const StudentLogin = () => {
             </Select>
           </div>
           <DialogFooter>
-            <Button onClick={handleProfileUpdate} className="w-full">Update</Button>
+            <Button onClick={handleProfileUpdate} className="w-full">
+              Update
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -272,7 +303,9 @@ const StudentLogin = () => {
       <Dialog open={showForgotPasswordPopup} onOpenChange={setShowForgotPasswordPopup}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><MailCheck size={18} /> Forgot Password</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <MailCheck size={18} /> Forgot Password
+            </DialogTitle>
             <DialogDescription>
               Enter your official email. Admin will verify and reset your password.
             </DialogDescription>
@@ -284,7 +317,9 @@ const StudentLogin = () => {
             onChange={(e) => setForgotPasswordEmail(e.target.value)}
           />
           <DialogFooter>
-            <Button onClick={handleForgotPassword} className="w-full">Request Reset</Button>
+            <Button onClick={handleForgotPassword} className="w-full">
+              Request Reset
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

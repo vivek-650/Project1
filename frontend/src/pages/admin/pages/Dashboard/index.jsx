@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, Bell, Settings, Shield, FileText, Activity } from "lucide-react";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -32,6 +33,22 @@ const Dashboard = () => {
     },
   ];
 
+  //fetch students data
+  const fetchStudents = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/users`);
+      if (!response.ok) throw new Error("Failed to fetch students");
+      const data = await response.json();
+      console.log("Fetched students:", data);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -39,17 +56,13 @@ const Dashboard = () => {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">
-                <h1 className="text-4xl font-bold text-foreground">
-                Admin Dashboard
-              </h1>
+              <h1 className="text-4xl font-bold text-foreground">Admin Dashboard</h1>
               <Badge variant="secondary" className="px-3">
                 <Shield className="mr-1 h-3 w-3" />
                 Administrator
               </Badge>
             </div>
-              <p className="text-muted-foreground mt-1">
-              Welcome back, {adminName}
-            </p>
+            <p className="text-muted-foreground mt-1">Welcome back, {adminName}</p>
           </div>
           <Button variant="outline" onClick={() => navigate("/administrator/dashboard/profile")}>
             <Settings className="mr-2 h-4 w-4" />
@@ -66,9 +79,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Registered students
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Registered students</p>
             </CardContent>
           </Card>
 
@@ -79,9 +90,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Formed teams
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Formed teams</p>
             </CardContent>
           </Card>
 
@@ -92,9 +101,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Published announcements
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Published announcements</p>
             </CardContent>
           </Card>
 
@@ -108,9 +115,7 @@ const Dashboard = () => {
                 <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
                 <span className="text-lg font-semibold">Operational</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                All systems running
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">All systems running</p>
             </CardContent>
           </Card>
         </div>
@@ -119,9 +124,7 @@ const Dashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Access administrative tools and features
-            </CardDescription>
+            <CardDescription>Access administrative tools and features</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -137,9 +140,7 @@ const Dashboard = () => {
                     <Icon className={`h-8 w-8 mb-3 text-primary`} />
                     <div className="text-left">
                       <div className="font-semibold text-base">{action.title}</div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {action.description}
-                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">{action.description}</div>
                     </div>
                   </Button>
                 );
@@ -161,7 +162,9 @@ const Dashboard = () => {
                   <FileText className="h-5 w-5 text-primary mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm font-medium">System initialized</p>
-                    <p className="text-xs text-muted-foreground">Ready to manage students and teams</p>
+                    <p className="text-xs text-muted-foreground">
+                      Ready to manage students and teams
+                    </p>
                   </div>
                 </div>
               </div>

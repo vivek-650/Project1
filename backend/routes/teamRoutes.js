@@ -9,11 +9,7 @@ const router = express.Router();
  * returns { docRef, data } or null
  */
 async function findStudentByRoll(roll) {
-  const snap = await db
-    .collection("students")
-    .where("roll", "==", roll)
-    .limit(1)
-    .get();
+  const snap = await db.collection("students").where("roll", "==", roll).limit(1).get();
   if (snap.empty) return null;
   const doc = snap.docs[0];
   return { docRef: doc.ref, data: doc.data() };
@@ -28,50 +24,34 @@ router.post("/create", async (req, res) => {
   try {
     const { leaderRoll, members } = req.body;
 
-    if (!leaderRoll)
-      return res.status(400).json({ message: "leaderRoll required" });
+    if (!leaderRoll) return res.status(400).json({ message: "leaderRoll required" });
     if (!Array.isArray(members) || members.length !== 3)
-      return res
-        .status(400)
-        .json({ message: "Exactly 3 member entries required" });
+      return res.status(400).json({ message: "Exactly 3 member entries required" });
 
     // Basic validation: no duplicate rolls including leader
     const rolls = [leaderRoll, ...members.map((m) => m.roll)];
     const uniqueRolls = new Set(rolls);
     if (uniqueRolls.size !== 4) {
-      return res
-        .status(400)
-        .json({ message: "Duplicate roll numbers are not allowed" });
+      return res.status(400).json({ message: "Duplicate roll numbers are not allowed" });
     }
 
     // Verify leader exists and is active and not already in a team
     const leader = await findStudentByRoll(leaderRoll);
-    if (!leader)
-      return res
-        .status(404)
-        .json({ message: `Leader roll ${leaderRoll} not found` });
+    if (!leader) return res.status(404).json({ message: `Leader roll ${leaderRoll} not found` });
     if (!leader.data.passwordChanged || !leader.data.isActive)
       return res.status(403).json({ message: "Leader account not active" });
-    if (leader.data.teamId)
-      return res.status(400).json({ message: "Leader already in a team" });
+    if (leader.data.teamId) return res.status(400).json({ message: "Leader already in a team" });
 
     // Validate invited members: they must exist and not be in a team
     const invited = [];
     for (const m of members) {
       if (!m.roll || !m.name || !m.email) {
-        return res
-          .status(400)
-          .json({ message: "Each member must have roll, name & email" });
+        return res.status(400).json({ message: "Each member must have roll, name & email" });
       }
       const student = await findStudentByRoll(m.roll);
-      if (!student)
-        return res
-          .status(404)
-          .json({ message: `Invited student ${m.roll} not found` });
+      if (!student) return res.status(404).json({ message: `Invited student ${m.roll} not found` });
       if (student.data.teamId)
-        return res
-          .status(400)
-          .json({ message: `Student ${m.roll} already in a team` });
+        return res.status(400).json({ message: `Student ${m.roll} already in a team` });
       invited.push({
         roll: m.roll,
         docRef: student.docRef,
@@ -110,9 +90,7 @@ router.post("/create", async (req, res) => {
     // Add invitations to each invited student's document (invitations array)
     for (const inv of invited) {
       batch.update(inv.docRef, {
-        invitations: db.FieldValue
-          ? db.FieldValue.arrayUnion(newTeamRef.id)
-          : [], // legacy: will be replaced below
+        invitations: db.FieldValue ? db.FieldValue.arrayUnion(newTeamRef.id) : [], // legacy: will be replaced below
       });
       // Note: if using the latest firebase-admin, use admin.firestore.FieldValue.arrayUnion
       // But since you're using Firestore client from @google-cloud/firestore, do below:
@@ -131,9 +109,7 @@ router.post("/create", async (req, res) => {
     if (arrayUnion) {
       const updates = [];
       for (const inv of invited) {
-        updates.push(
-          inv.docRef.update({ invitations: arrayUnion(newTeamRef.id) })
-        );
+        updates.push(inv.docRef.update({ invitations: arrayUnion(newTeamRef.id) }));
       }
       await Promise.all(updates);
     } else {
@@ -208,8 +184,7 @@ router.post("/respond", async (req, res) => {
     // Validate team
     const teamRef = db.collection("teams").doc(teamId);
     const teamDoc = await teamRef.get();
-    if (!teamDoc.exists)
-      return res.status(404).json({ message: "Team not found" });
+    if (!teamDoc.exists) return res.status(404).json({ message: "Team not found" });
 
     const team = teamDoc.data();
     if (team.status !== "pending") {
@@ -219,16 +194,12 @@ router.post("/respond", async (req, res) => {
     // Find the member entry
     const memberIndex = team.members.findIndex((m) => m.roll === roll);
     if (memberIndex === -1) {
-      return res
-        .status(400)
-        .json({ message: "You are not invited to this team" });
+      return res.status(400).json({ message: "You are not invited to this team" });
     }
 
     // Prevent acceptance if already in another team
     if (action === "accept" && student.data.teamId) {
-      return res
-        .status(400)
-        .json({ message: "You are already in another team" });
+      return res.status(400).json({ message: "You are already in another team" });
     }
 
     const updatedMembers = [...team.members];
@@ -281,9 +252,7 @@ router.post("/finalize", async (req, res) => {
   try {
     const { leaderRoll, teamId } = req.body;
     if (!leaderRoll || !teamId)
-      return res
-        .status(400)
-        .json({ message: "leaderRoll and teamId required" });
+      return res.status(400).json({ message: "leaderRoll and teamId required" });
 
     // verify leader
     const leader = await findStudentByRoll(leaderRoll);
@@ -291,32 +260,25 @@ router.post("/finalize", async (req, res) => {
 
     const teamRef = db.collection("teams").doc(teamId);
     const teamDoc = await teamRef.get();
-    if (!teamDoc.exists)
-      return res.status(404).json({ message: "Team not found" });
+    if (!teamDoc.exists) return res.status(404).json({ message: "Team not found" });
     const team = teamDoc.data();
 
-    if (team.leaderRoll !== leaderRoll)
-      return res.status(403).json({ message: "Not authorized" });
+    if (team.leaderRoll !== leaderRoll) return res.status(403).json({ message: "Not authorized" });
     if (team.status !== "pending")
       return res.status(400).json({ message: "Team cannot be finalized" });
 
     // check that leader present and every invited member has status 'accepted' and that none are in other teams
     const allAccepted = team.members.every((m) => m.status === "accepted");
     if (!allAccepted)
-      return res
-        .status(400)
-        .json({ message: "All members must accept before finalizing" });
+      return res.status(400).json({ message: "All members must accept before finalizing" });
 
     // Re-check that none of the members are already in another team (race condition)
     const memberDocs = [];
     for (const m of team.members) {
       const s = await findStudentByRoll(m.roll);
-      if (!s)
-        return res.status(404).json({ message: `Member ${m.roll} not found` });
+      if (!s) return res.status(404).json({ message: `Member ${m.roll} not found` });
       if (s.data.teamId)
-        return res
-          .status(400)
-          .json({ message: `Member ${m.roll} already in a team` });
+        return res.status(400).json({ message: `Member ${m.roll} already in a team` });
       memberDocs.push(s);
     }
 
@@ -353,10 +315,7 @@ router.post("/finalize", async (req, res) => {
  */
 router.get("/accepted-members", async (_req, res) => {
   try {
-    const snap = await db
-      .collection("teams")
-      .where("status", "==", "pending")
-      .get();
+    const snap = await db.collection("teams").where("status", "==", "pending").get();
     const accepted = new Set();
     snap.forEach((doc) => {
       const t = doc.data();
@@ -392,10 +351,7 @@ router.get("/status/:roll", async (req, res) => {
     }
     // If student has pendingTeamId (leader) -> fetch it
     if (student.data.pendingTeamId) {
-      const tdoc = await db
-        .collection("teams")
-        .doc(student.data.pendingTeamId)
-        .get();
+      const tdoc = await db.collection("teams").doc(student.data.pendingTeamId).get();
       if (tdoc.exists) return res.json({ team: tdoc.data() });
     }
 

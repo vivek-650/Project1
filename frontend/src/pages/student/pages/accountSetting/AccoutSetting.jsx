@@ -46,6 +46,7 @@ const AccoutSetting = () => {
         <p>Email: {user?.email}</p>
         <p>Phone Number: {user?.phone}</p>
         <p>Account Status: {user?.isActive ? "Active" : "In Active"}</p>
+        <p>Role: {user?.role}</p>
       </div>
     </div>
   );
