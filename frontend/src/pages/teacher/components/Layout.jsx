@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   Home,
   GraduationCap,
+  Layers,
 } from "lucide-react";
 
 export const Layout = () => {
@@ -45,6 +46,12 @@ export const Layout = () => {
       name: "Requests",
       link: "/supervisor/dashboard/requests",
       icon: FileCheck,
+    },
+    {
+      id: "4",
+      name: "Teams",
+      link: "/supervisor/dashboard/teams",
+      icon: Layers,
     },
   ];
 
