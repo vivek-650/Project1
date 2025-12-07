@@ -4,6 +4,7 @@ import { Layout } from "../teacher/components/Layout";
 import { Requests } from "../teacher/pages/Requests/Requests";
 import { Users } from "../teacher/pages/Users/Users";
 import Dashboard from "../teacher/pages/Dashboard/dashboard";
+import Teams from "../teacher/pages/Teams/Teams";
 import { AddUsers } from "../teacher/pages/AddUsers/AddUsers";
 
 const TeacherRoutes = () => {
@@ -15,6 +16,7 @@ const TeacherRoutes = () => {
         <Route path={"/users"} element={<Users />} />
         <Route path={"/add-users"} element={<AddUsers />} />
         <Route path={"/requests"} element={<Requests />} />
+        <Route path={"/teams"} element={<Teams />} />
       </Route>
     </Routes>
   );
