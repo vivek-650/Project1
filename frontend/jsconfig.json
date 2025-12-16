@@ -1,0 +1,6 @@
+﻿{
+  "compilerOptions": { "baseUrl": ".", "paths": { "@/*": ["./src/*"] } },
+  "checkJs": true,
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

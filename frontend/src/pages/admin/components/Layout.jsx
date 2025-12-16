@@ -1,81 +1,175 @@
 import { useState } from "react";
-import Navbar from "./Navbar";
-import { Colors } from "../../../../utils/constants";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  FileText,
+  Users,
+  Book,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  ChevronLeft,
+  Home,
+  Shield,
+} from "lucide-react";
 
 export const Layout = () => {
-  const [activeTab, setActiveTab] = useState(null);
+  const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const userName = sessionStorage.getItem("name") || "Admin";
 
   const menuItems = [
     {
-      id: "1",
-      name: "All Teachers",
-      link: "teachers",
+      id: "0",
+      name: "Dashboard",
+      link: "/administrator/dashboard",
+      icon: Home,
     },
     {
       id: "2",
-      name: "All Notices",
-      link: "notices",
+      name: "Notices",
+      link: "/administrator/dashboard/notices",
+      icon: FileText,
+    },
+    {
+      id: "3",
+      name: "Students",
+      link: "/administrator/dashboard/students",
+      icon: Users,
+    },
+    {
+      id: "4",
+      name: "Projects",
+      link: "/administrator/dashboard/projects",
+      icon: Book,
+    },
+    {
+      id: "5",
+      name: "Supervisors",
+      link: "/administrator/dashboard/supervisors",
+      icon: LayoutDashboard,
     },
   ];
 
-  const styles = {
-    main: {
-      height: "100%",
-      width: "100%",
-    },
-    leftMenu: {
-      position: "fixed",
-      left: 0,
-      backgroundColor: Colors.secondary,
-      width: "10%",
-      height: "100%",
-      paddingTop: "5%",
-    },
-    menuItems: {
-      padding: "10%",
-      cursor: "pointer",
-    },
-    rightContent: {
-      position: "absolute",
-      left: "10%",
-      height: "100%",
-      width: "90%",
-    },
-  };
-
-  const handleMenuClick = (menu) => {
-    setActiveTab(menu.name);
-    navigate(`/coordinator/dashboard/${menu.link}`);
-  };
-
   const handleLogout = () => {
-    sessionStorage.clear("coordinatorToken");
-    navigate("/");
+    sessionStorage.clear();
+    navigate("/administrator");
   };
+
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <div style={styles.main}>
-      <Navbar userName={"Test Coordinator"} onLogout={handleLogout} />
-      <div style={styles.leftMenu}>
-        {menuItems.map((item) => (
-          <div
-            key={item.id}
-            style={{
-              ...styles.menuItems,
-              backgroundColor:
-                activeTab === item.name ? Colors.tertiary : "inherit",
-            }}
-            onClick={() => handleMenuClick(item)}
+    <div className="portal-admin flex h-screen w-full bg-background">
+      {/* Sidebar */}
+      <aside
+        className={`${
+          collapsed ? "w-16" : "w-64"
+        } bg-card shadow-sm transition-all duration-300 flex flex-col`}
+      >
+        {/* Header */}
+        <div className="h-16 flex items-center justify-between px-4">
+          {!collapsed && (
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                <Shield className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-semibold text-base text-foreground">
+                Admin Portal
+              </span>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(!collapsed)}
+            className="ml-auto hover:bg-slate-100 dark:hover:bg-slate-800"
           >
-            {item.name}
+            {collapsed ? (
+              <Menu className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+
+        {/* User Info */}
+        {!collapsed && (
+          <div className="p-4">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+              <Avatar className="h-9 w-9">
+                <AvatarFallback className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white text-sm font-medium">
+                  {userName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{userName}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  Administrator
+                </p>
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
-      <div style={styles.rightContent}>
+        )}
+
+        {/* Navigation */}
+        <ScrollArea className="flex-1 px-3 py-4">
+          <nav className="space-y-1">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.link);
+              
+              return (
+                <Button
+                  key={item.id}
+                  variant="ghost"
+                  className={`w-full h-10 justify-start text-sm font-medium ${
+                    collapsed ? "px-2" : "px-3"
+                  } ${
+                    active
+                      ? "bg-primary/10 text-primary hover:bg-primary/20"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                  onClick={() => navigate(item.link)}
+                >
+                  <Icon className={`h-4 w-4 ${collapsed ? "" : "mr-3"}`} />
+                  {!collapsed && (
+                    <span className="flex-1 text-left">{item.name}</span>
+                  )}
+                </Button>
+              );
+            })}
+          </nav>
+        </ScrollArea>
+
+        {/* Footer */}
+        <div className="p-3 space-y-2">
+          {!collapsed && (
+            <div className="px-3 pb-2">
+              <ThemeToggle />
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            className={`w-full h-10 justify-start text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 ${
+              collapsed ? "px-2" : "px-3"
+            }`}
+            onClick={handleLogout}
+          >
+            <LogOut className={`h-4 w-4 ${collapsed ? "" : "mr-3"}`} />
+            {!collapsed && "Logout"}
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto bg-background">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 };
+

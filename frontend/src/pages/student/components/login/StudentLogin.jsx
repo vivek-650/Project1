@@ -1,376 +1,330 @@
+/* eslint-disable */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Lock, User, MailCheck, ArrowLeft } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const StudentLogin = () => {
-  const [showPopup, setShowPopup] = useState(false);
+  const [changePasswordPopup, setChangePasswordPopup] = useState(false);
+  const [updateProfilePopup, setUpdateProfilePopup] = useState(false);
   const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
+
   const [name, setName] = useState("");
+  const [roll, setRoll] = useState(null);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [error, setError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [newPasswordError, setNewPasswordError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [contact, setContact] = useState("");
+  const [address, setAddress] = useState("");
+  const [role, setRole] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const login = async () => {
     setLoading(true);
     try {
-      const loginData = { name: name, password: password };
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(loginData),
-        }
-      );
+      const loginData = { roll, password };
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
 
       const data = await response.json();
       if (response.ok) {
         if (response.status === 203) {
-          setShowPopup(true);
+          setUpdateProfilePopup(true);
           setLoading(false);
           return;
         }
 
-        if (response.status === 201) {
-          setError(data.message);
-          setLoading(false);
-          return;
-        }
-
-        sessionStorage.setItem("userToken", data.data.token);
+        sessionStorage.setItem("studentToken", data.data.token);
         sessionStorage.setItem("recipeCount", data.data.recipeCount);
         sessionStorage.setItem("email", data.data.email);
-        navigate("/user/dashboard");
-
-        setLoading(false);
+        sessionStorage.setItem("roll", data.data.roll);
+        navigate("/student/dashboard");
       } else {
         setError(data.message);
-        setLoading(false);
       }
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
-
-  const handleVerify = (e) => {
-    e.preventDefault();
-    let isValid = true;
-
-    if (!password) {
-      setPasswordError("Password is required");
-      isValid = false;
-    } else {
-      setPasswordError("");
-    }
-
-    if (isValid) {
-      setError("");
-      login();
-    }
-  };
-
-  const changePassword = async () => {
-    setLoading(true);
-    try {
-      const userData = { name: name, newPassword: newPassword };
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/change-password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok) {
-        alert(
-          "Password changes successfully , now try logging in with new password"
-        );
-        navigate("/user");
-      } else {
-        console.log(
-          "Error in user change password api response: ",
-          data.message
-        );
-      }
-    } catch (error) {
-      console.log("Error in user change password api: ", error);
+    } catch (err) {
+      setError(err.message);
     }
     setLoading(false);
   };
 
-  const handlePasswordChange = () => {
-    let isValid = true;
-
-    if (newPassword.length < 6) {
-      setNewPasswordError("Password must be at least 6 characters");
-      isValid = false;
-    } else if (newPassword !== confirmPassword) {
-      setNewPasswordError("Passwords do not match");
-      isValid = false;
-    } else {
-      setNewPasswordError("");
+  const changePassword = async () => {
+    if (newPassword !== confirmPassword || newPassword.length < 6) {
+      alert("Passwords do not match or are too short.");
+      return;
     }
 
-    if (isValid) {
-      changePassword();
-      setName("");
-      setPassword("");
-      setShowPopup(false);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/change-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roll, newPassword }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Password changed successfully!");
+        window.location.reload();
+      } else {
+        alert(data.message || "Failed to change password.");
+      }
+    } catch (err) {
+      alert("Something went wrong.");
     }
   };
 
-  const handleForgotPassword = async (email) => {
+  const handleForgotPassword = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotPasswordEmail }),
+      });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Password reset request sent successfully.");
+      const data = await res.json();
+      if (res.ok) {
+        alert("Password reset request sent!");
         setShowForgotPasswordPopup(false);
       } else {
-        alert(data.message || "Something went wrong. Please try again.");
+        alert(data.message || "Error sending request.");
+      }
+    } catch (err) {
+      alert("Error occurred while requesting password reset.");
+    }
+  };
+
+  const handleProfileUpdate = async () => {
+    setLoading(true);
+    try {
+      const profileData = {
+        name,
+        contact,
+        address,
+        role,
+        roll,
+      };
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/update-profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Profile updated successfully");
+        setUpdateProfilePopup(false);
+        setChangePasswordPopup(true);
+      } else {
+        alert(data.message || "Profile update failed");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while sending the request.");
+      alert("An error occurred");
     }
+    setLoading(false);
   };
 
   return (
-    <div style={styles.loginCard}>
-      <div style={styles.brand}>
-        <img
-          style={styles.brandLogo}
-          src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
-          alt="User"
-        />
-        <h1>Welcome back!</h1>
-        <p>Enter your credentials to access your account</p>
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center font-sans px-4 bg-background text-foreground">
+      {/* Themed background layers */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#fcdfff] via-white to-[#c5d2ff] dark:hidden" />
+      <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
 
-      <form id="loginForm" style={styles.loginForm} onSubmit={handleVerify}>
-        {error && (
-          <div style={{ ...styles.error, textAlign: "center" }}>{error}</div>
-        )}
-        <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>
-            Name
-          </label>
-          <input
-            type="name"
-            id="name"
-            placeholder="Enter username provided by admin"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={styles.input}
+      {/* back button */}
+      <Button variant="link" className="absolute top-4 left-4" onClick={() => navigate("/members")}>
+        <ArrowLeft className="mr-2" />
+        Back
+      </Button>
+
+      {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
+
+      <Card className="w-full max-w-md border border-border shadow-sm">
+        <CardHeader className="text-center">
+          <img
+            src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
+            className="w-16 h-16 mx-auto rounded-full border border-border"
+            alt="User"
           />
-        </div>
-
-        <div style={styles.formGroup}>
-          <label htmlFor="password" style={styles.label}>
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter default password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-          />
-          {passwordError && <div style={styles.error}>{passwordError}</div>}
-        </div>
-
-        <div style={styles.rememberForgot}>
-          <p
-            onClick={() => setShowForgotPasswordPopup(true)}
-            className="forgot-password"
+          <CardTitle className="text-2xl mt-2">Student Login</CardTitle>
+          <CardDescription>Sign in to your dashboard</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              login();
+            }}
+            className="space-y-4"
           >
-            Forgot password?
-          </p>
-        </div>
+            {error && <div className="text-red-500 text-sm">{error}</div>}
 
-        <button type="submit" style={styles.loginBtn}>
-          {loading ? "Loading..." : "Verify"}
-        </button>
-      </form>
-
-      {showPopup && (
-        <div style={styles.popupOverlay}>
-          <div style={styles.popup}>
-            <h2>Set New Password</h2>
-            <div style={styles.formGroup}>
-              <label>New Password</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                style={styles.input}
+            <div className="relative">
+              <User className="absolute top-3 left-3 text-muted-foreground" size={18} />
+              <Input
+                type="text"
+                placeholder="Roll Number"
+                value={roll}
+                onChange={(e) => setRoll(e.target.value)}
+                className="pl-10"
               />
             </div>
-            <div style={styles.formGroup}>
-              <label>Confirm Password</label>
-              <input
+
+            <div className="relative">
+              <Lock className="absolute top-3 left-3 text-muted-foreground" size={18} />
+              <Input
                 type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                style={styles.input}
+                placeholder="Password"
+                value={password}
+                autoComplete="current-password"
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10"
               />
             </div>
-            {newPasswordError && (
-              <div style={styles.error}>{newPasswordError}</div>
-            )}
-            <button onClick={handlePasswordChange} style={styles.loginBtn}>
+
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="link"
+                className="px-0"
+                onClick={() => setShowForgotPasswordPopup(true)}
+              >
+                Forgot password?
+              </Button>
+            </div>
+
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Verifying..." : "Login"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Change Password Dialog */}
+      <Dialog open={changePasswordPopup} onOpenChange={setChangePasswordPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Set New Password</DialogTitle>
+            <DialogDescription>Choose a strong password for your account.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              type="password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={changePassword} className="w-full">
               Submit
-            </button>
-          </div>
-        </div>
-      )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {showForgotPasswordPopup && (
-        <div style={styles.popupOverlay}>
-          <div style={styles.popup}>
-            <h2>Forgot Password</h2>
-            <div style={styles.formGroup}>
-              <label style={styles.ForgotLabel}>
-                Enter company email for verification and request admin to grant
-                permission{" "}
-              </label>
-              <input
-                type="email"
-                value={forgotPasswordEmail}
-                onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <button
-              onClick={() => handleForgotPassword(forgotPasswordEmail)}
-              style={{ ...styles.loginBtn, width: "80%" }}
-            >
-              Request
-            </button>
+      {/* Update Profile Dialog */}
+      <Dialog open={updateProfilePopup} onOpenChange={setUpdateProfilePopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Profile</DialogTitle>
+            <DialogDescription>Complete your profile to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <Input
+              type="text"
+              placeholder="Contact"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+            />
+            <Input
+              type="text"
+              placeholder="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="leader">Team Leader</SelectItem>
+                <SelectItem value="member">Team Member</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button onClick={handleProfileUpdate} className="w-full">
+              Update
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={showForgotPasswordPopup} onOpenChange={setShowForgotPasswordPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MailCheck size={18} /> Forgot Password
+            </DialogTitle>
+            <DialogDescription>
+              Enter your official email. Admin will verify and reset your password.
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            type="email"
+            placeholder="Enter email"
+            value={forgotPasswordEmail}
+            onChange={(e) => setForgotPasswordEmail(e.target.value)}
+          />
+          <DialogFooter>
+            <Button onClick={handleForgotPassword} className="w-full">
+              Request Reset
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-};
-
-const styles = {
-  loginCard: {
-    maxWidth: "400px",
-    margin: "1.5rem auto",
-    padding: "2rem",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    borderRadius: "10px",
-    backgroundColor: "#fff",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  brand: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "2rem",
-  },
-  brandLogo: {
-    width: "60px",
-    height: "60px",
-    marginBottom: "1rem",
-    backgroundColor: "#ccc",
-    borderRadius: "50%",
-    border: "1px solid #dadada",
-  },
-  loginForm: { display: "flex", flexDirection: "column", width: "100%" },
-  formGroup: {
-    marginBottom: "1rem",
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-  },
-  input: {
-    width: "97%",
-    height: "25px",
-    marginTop: "0.5rem",
-    padding: "5px",
-    borderRadius: "5px",
-    border: "1px solid grey",
-  },
-  label: { fontSize: "1.05rem" },
-  error: { color: "red", fontSize: "0.875rem", marginTop: "0.5rem" },
-  rememberForgot: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "1rem",
-    width: "100%",
-    color: "blue",
-    cursor: "pointer",
-  },
-  loginBtn: {
-    width: "100%",
-    padding: "0.75rem",
-    backgroundColor: "black",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontSize: "1rem",
-  },
-  popupOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0,0,0,0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  popup: {
-    backgroundColor: "#fff",
-    padding: "2rem",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-    width: "25%",
-    height: "50%",
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "3rem",
-    // justifyContent: "space-evenly",
-  },
-  ForgotLabel: {
-    fontSize: "1.07rem",
-    marginBottom: "1rem",
-  },
 };
 
 export default StudentLogin;

@@ -12,7 +12,8 @@ router.post("/signup", async (req, res) => {
     const userRef = db.collection("users").doc(email);
     const userDoc = await userRef.get();
 
-    if (!userDoc.exists) return res.status(400).json({ error: "User not found" });
+    if (!userDoc.exists)
+      return res.status(400).json({ error: "User not found" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await userRef.update({ password: hashedPassword, isActive: true });
@@ -30,15 +31,19 @@ router.post("/login", async (req, res) => {
     const userRef = db.collection("users").doc(email);
     const userDoc = await userRef.get();
 
-    if (!userDoc.exists) return res.status(400).json({ error: "User not found" });
+    if (!userDoc.exists)
+      return res.status(400).json({ error: "User not found" });
 
     const user = userDoc.data();
-    if (!user.isActive) return res.status(403).json({ error: "User is not active" });
+    if (!user.isActive)
+      return res.status(403).json({ error: "User is not active" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     res.json({ token, user });
   } catch (error) {
@@ -53,7 +58,10 @@ router.post("/forgot-password", async (req, res) => {
     const defaultPassword = Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
-    await db.collection("users").doc(email).update({ password: hashedPassword });
+    await db
+      .collection("users")
+      .doc(email)
+      .update({ password: hashedPassword });
 
     res.json({ message: "Password reset. Check your email." });
   } catch (error) {

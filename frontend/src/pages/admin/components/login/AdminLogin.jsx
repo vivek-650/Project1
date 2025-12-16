@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +14,31 @@ const AdminLogin = () => {
   const validateEmail = (email) => {
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return re.test(String(email).toLowerCase());
+  };
+
+  const coordinatorLogin = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/coordinator/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+      console.log("Login successful:", data);
+      sessionStorage.setItem("coordinatorToken", data.token);
+      navigate("/coordinator/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      // alert(error.message || "An error occurred during login");
+    }
   };
 
   const handleLogin = (e) => {
@@ -35,129 +63,60 @@ const AdminLogin = () => {
     }
 
     if (isValid) {
-      sessionStorage.setItem("coordinatorToken", "coordinatorToken001");
-      alert("Login successful!");
-      navigate("/coordinator/dashboard");
+      coordinatorLogin();
     }
   };
 
-  const styles = {
-    loginCard: {
-      maxWidth: "400px",
-      margin: "1.5rem auto",
-      padding: "2rem",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      borderRadius: "10px",
-      backgroundColor: "#fff",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-    },
-    brand: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: ".5rem",
-    },
-    brandLogo: {
-      width: "100px",
-      height: "100px",
-      marginBottom: "0rem",
-      backgroundColor: "#ccc",
-      borderRadius: "50%",
-    },
-    loginForm: { display: "flex", flexDirection: "column", width: "100%" },
-    formGroup: {
-      marginBottom: ".5rem",
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-    },
-    input: {
-      width: "97%",
-      height: "25px",
-      marginTop: "0.5rem",
-      padding: "5px",
-      borderRadius: "5px",
-      border: "1px solid grey",
-    },
-    label: { fontSize: "1.05rem" },
-    error: { color: "red", fontSize: "0.875rem", marginTop: "0.5rem" },
-    rememberForgot: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: "1rem",
-      width: "100%",
-    },
-    loginBtn: {
-      width: "100%",
-      padding: "0.75rem",
-      backgroundColor: "black",
-      color: "#fff",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-    },
-    signupLink: { textAlign: "center", marginTop: "2rem" },
-  };
-
   return (
-    <div style={styles.loginCard}>
-      <div style={styles.brand}>
-        <img
-          style={styles.brandLogo}
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS9WDX7JlmoXx1-KXqPeJAwiS0xWGDmjBEWw&s"
-          alt="logo"
-        />
-        <h1>Welcome back!</h1>
-        <p>Enter your credentials to access your account</p>
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center font-sans bg-background text-foreground">
+      {/* Themed background layers */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#cbd8ff] via-white to-[#ffcffa] dark:hidden" />
+      <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
 
-      <form id="loginForm" style={styles.loginForm} onSubmit={handleLogin}>
-        <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Enter username"
-            autoComplete="email"
-            style={styles.input}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+      {/* Global ThemeToggle renders from App.jsx; no local toggle here */}
+
+      <Card className="w-full max-w-md border border-border shadow-sm">
+        <CardHeader className="items-center text-center">
+          <img
+            className="w-24 h-24 rounded-full border border-border"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS9WDX7JlmoXx1-KXqPeJAwiS0xWGDmjBEWw&s"
+            alt="logo"
           />
-          {emailError && <div style={styles.error}>{emailError}</div>}
-        </div>
+          <CardTitle className="text-2xl">Welcome back!</CardTitle>
+          <CardDescription>Enter your credentials to access your account</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form id="loginForm" className="space-y-4" onSubmit={handleLogin}>
+            <div className="space-y-1">
+              <label htmlFor="email" className="text-sm font-medium">Email</label>
+              <Input
+                type="email"
+                id="email"
+                placeholder="Enter username"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
+            </div>
 
-        <div style={styles.formGroup}>
-          <label htmlFor="password" style={styles.label}>
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter your password"
-            autoComplete="current-password"
-            style={styles.input}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {passwordError && <div style={styles.error}>{passwordError}</div>}
-        </div>
+            <div className="space-y-1">
+              <label htmlFor="password" className="text-sm font-medium">Password</label>
+              <Input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
+            </div>
 
-        {/* <div style={styles.rememberForgot}>
-          <a href="#" className="forgot-password">
-            Forgot password?
-          </a>
-        </div> */}
-
-        <button type="submit" style={styles.loginBtn} id="loginButton">
-          Sign in
-        </button>
-      </form>
+            <Button type="submit" id="loginButton" className="w-full mt-2">Sign in</Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
