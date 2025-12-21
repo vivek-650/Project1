@@ -194,10 +194,10 @@ router.patch("/recipes/:id/upload", async (req, res) => {
   }
 });
 // 3. get users details
-router.get("/user-details/:email", async (req, res) => {
+router.get("/user-details/:roll", async (req, res) => {
   try {
-    const { email } = req.params;
-    const recipesSnapshot = await db.collection("students").where("email", "==", email).get();
+    const { roll } = req.params;
+    const recipesSnapshot = await db.collection("students").where("roll", "==", roll).get();
     const userDetails = recipesSnapshot.docs.map((doc) => doc.data());
     console.log(userDetails);
     res.json(userDetails);

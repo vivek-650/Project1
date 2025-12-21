@@ -33,9 +33,9 @@ const LeaderFinalize = ({ team: initialTeam, onFinalized, allowFinalize = true }
     if (!allowFinalize) return;
     setLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_BASE_URL}/api/team/finalize`, { 
-        leaderRoll: roll, 
-        teamId: team.teamId 
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/api/team/finalize`, {
+        leaderRoll: roll,
+        teamId: team.teamId,
       });
       alert("Team finalized successfully!");
       onFinalized?.();
@@ -66,9 +66,7 @@ const LeaderFinalize = ({ team: initialTeam, onFinalized, allowFinalize = true }
           <Lock className="w-5 h-5 text-primary" />
           Finalize Your Team
         </CardTitle>
-        <CardDescription>
-          Lock your team roster once all members have accepted
-        </CardDescription>
+        <CardDescription>Lock your team roster once all members have accepted</CardDescription>
       </CardHeader>
 
       <CardContent className="pt-6 space-y-5">
@@ -81,14 +79,13 @@ const LeaderFinalize = ({ team: initialTeam, onFinalized, allowFinalize = true }
         {/* Progress Indicator */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">
-              Acceptance Progress
-            </span>
+            <span className="text-xs font-medium text-muted-foreground">Acceptance Progress</span>
             <Badge
               variant="outline"
-              className={allAccepted
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : "bg-amber-50 text-amber-700 border-amber-200"
+              className={
+                allAccepted
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-amber-50 text-amber-700 border-amber-200"
               }
             >
               {acceptedCount} / {totalCount}
@@ -165,7 +162,7 @@ const LeaderFinalize = ({ team: initialTeam, onFinalized, allowFinalize = true }
             allowFinalize ? (
               <>
                 <Lock className="w-4 h-4 mr-2" />
-                Finalize Team & Lock Roster
+                Finalize & Lock Team
               </>
             ) : (
               <>
@@ -186,9 +183,7 @@ const LeaderFinalize = ({ team: initialTeam, onFinalized, allowFinalize = true }
             <div className="flex gap-3">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-emerald-900 mb-1">
-                  Ready to Finalize!
-                </p>
+                <p className="text-sm font-medium text-emerald-900 mb-1">Ready to Finalize!</p>
                 <p className="text-xs text-emerald-700">
                   All members have accepted. Click above to lock your team roster.
                 </p>

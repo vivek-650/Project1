@@ -63,7 +63,7 @@ const StudentLogin = () => {
 
         sessionStorage.setItem("studentToken", data.data.token);
         sessionStorage.setItem("recipeCount", data.data.recipeCount);
-        sessionStorage.setItem("email", data.data.email);
+        // sessionStorage.setItem("email", data.data.email);
         sessionStorage.setItem("roll", data.data.roll);
         navigate("/student/dashboard");
       } else {

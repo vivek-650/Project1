@@ -172,7 +172,7 @@ export const Layout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-background">
+      <main className="flex-1 overflow-y-scroll bg-background">
         <Outlet />
       </main>
     </div>

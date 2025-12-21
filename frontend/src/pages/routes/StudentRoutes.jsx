@@ -27,10 +27,10 @@ const StudentRoutes = () => {
       <Route element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path={"/dashboard"} element={<Dashboard />} />
-        <Route path={"/recepies"} element={<Recepies />} />
-        <Route path={"/drafts"} element={<Drafts />} />
-        <Route path={"/uploaded"} element={<Uploaded />} />
-        <Route path={"/new-recepie"} element={<AddRecepies />} />
+        {/* <Route path={"/recepies"} element={<Recepies />} /> */}
+        {/* <Route path={"/drafts"} element={<Drafts />} /> */}
+        {/* <Route path={"/uploaded"} element={<Uploaded />} /> */}
+        {/* <Route path={"/new-recepie"} element={<AddRecepies />} /> */}
         <Route path={"/account-setting"} element={<AccoutSetting />} />
         <Route path={"/team-formation"} element={<TeamFormation />} />
         {/* Example: Add more routes below, using ComingSoon for unavailable pages */}
