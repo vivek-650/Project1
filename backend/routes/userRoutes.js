@@ -40,7 +40,10 @@ router.post("/login", async (req, res) => {
         });
       }
     } else {
-      return res.status(203).json({ message: "Change password" });
+      return res.status(203).json({
+        name: user.name,
+        message: "Change password",
+      });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });

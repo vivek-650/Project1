@@ -23,8 +23,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export const AddUsers = () => {
-  const [user, setUser] = useState({ name: "", email: "", phone: "", recipeCount: "" });
+export const AddStudents = () => {
+  const [user, setUser] = useState({ name: "", roll: "" });
   const [users, setUsers] = useState(null);
   const [submittingSingle, setSubmittingSingle] = useState(false);
   const [submittingBulk, setSubmittingBulk] = useState(false);
@@ -40,7 +40,7 @@ export const AddUsers = () => {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/create-user`, {
         headers: { "Content-Type": "application/json" },
         method: "POST",
-        body: JSON.stringify(users),
+        body: JSON.stringify(user),
       });
       const data = await response.json().catch(() => ({}));
       if (response.ok) {
@@ -140,17 +140,17 @@ export const AddUsers = () => {
                 />
               </div>
               <div className="grid gap-2">
-                <label className="text-sm font-medium">Email</label>
+                <label className="text-sm font-medium">Roll</label>
                 <Input
-                  name="email"
-                  type="email"
-                  placeholder="Enter user email"
-                  value={user.email}
+                  name="roll"
+                  type="text"
+                  placeholder="Enter user roll"
+                  value={user.roll}
                   onChange={handleChange}
                   required
                 />
               </div>
-              <div className="grid gap-2">
+              {/* <div className="grid gap-2">
                 <label className="text-sm font-medium">Phone</label>
                 <Input
                   name="phone"
@@ -159,8 +159,8 @@ export const AddUsers = () => {
                   value={user.phone}
                   onChange={handleChange}
                 />
-              </div>
-              <div className="grid gap-2">
+              </div> */}
+              {/* <div className="grid gap-2">
                 <label className="text-sm font-medium">Recipe Count</label>
                 <Input
                   name="recipeCount"
@@ -170,12 +170,12 @@ export const AddUsers = () => {
                   value={user.recipeCount}
                   onChange={handleChange}
                 />
-              </div>
+              </div> */}
               <div className="flex justify-end gap-2 pt-2">
                 <Button
                   type="button"
                   onClick={createUser}
-                  disabled={submittingSingle || !user.name || !user.email}
+                  disabled={submittingSingle || !user.name || !user.roll}
                 >
                   {submittingSingle ? "Adding..." : "Add User"}
                 </Button>

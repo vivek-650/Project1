@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { Mail, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -61,6 +62,23 @@ const TeacherLogin = () => {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center font-sans bg-background text-foreground">
+      {/* Back Button */}
+      <button
+        className="absolute top-6 left-6 flex items-center gap-2 z-20 px-3 py-1 rounded-full shadow border border-border
+          bg-white/95 text-black hover:bg-white dark:bg-slate-800/95 dark:text-white dark:hover:bg-slate-700
+          focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-colors"
+        onClick={() => navigate("/")}
+        type="button"
+        aria-label="Back to Home"
+        style={{
+          borderWidth: 2,
+          borderColor: "rgba(0,0,0,0.12)",
+          boxShadow: "0 2px 8px 0 rgba(0,0,0,0.08)",
+        }}
+      >
+        <ArrowLeft size={20} className="" />
+        <span className="font-semibold text-sm">Back</span>
+      </button>
       {/* Themed background layers */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#cbd8ff] via-white to-[#ffcffa] dark:hidden" />
       <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />

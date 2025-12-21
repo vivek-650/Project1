@@ -34,12 +34,12 @@ export const Layout = () => {
       link: "/supervisor/dashboard/users",
       icon: Users,
     },
-    {
-      id: "2",
-      name: "Add Users",
-      link: "/supervisor/dashboard/add-users",
-      icon: UserPlus,
-    },
+    // {
+    //   id: "2",
+    //   name: "Add Users",
+    //   link: "/supervisor/dashboard/add-users",
+    //   icon: UserPlus,
+    // },
     {
       id: "3",
       name: "Requests",
@@ -70,9 +70,7 @@ export const Layout = () => {
               <div className="h-8 w-8 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
                 <GraduationCap className="h-4 w-4 text-white" />
               </div>
-              <span className="font-semibold text-base text-foreground">
-                Teacher Portal
-              </span>
+              <span className="font-semibold text-base text-foreground">Teacher Portal</span>
             </div>
           )}
           <Button
@@ -81,11 +79,7 @@ export const Layout = () => {
             onClick={() => setCollapsed(!collapsed)}
             className="ml-auto hover:bg-slate-100 dark:hover:bg-slate-800"
           >
-            {collapsed ? (
-              <Menu className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
+            {collapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
         </div>
 
@@ -100,9 +94,7 @@ export const Layout = () => {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{userName}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  Supervisor
-                </p>
+                <p className="text-xs text-muted-foreground truncate">Supervisor</p>
               </div>
             </div>
           </div>
@@ -114,7 +106,7 @@ export const Layout = () => {
             {menuItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.link);
-              
+
               return (
                 <Button
                   key={item.id}
@@ -129,9 +121,7 @@ export const Layout = () => {
                   onClick={() => navigate(item.link)}
                 >
                   <Icon className={`h-4 w-4 ${collapsed ? "" : "mr-3"}`} />
-                  {!collapsed && (
-                    <span className="flex-1 text-left">{item.name}</span>
-                  )}
+                  {!collapsed && <span className="flex-1 text-left">{item.name}</span>}
                 </Button>
               );
             })}

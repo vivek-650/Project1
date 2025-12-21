@@ -1,21 +1,85 @@
 import express from "express";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import admin from "firebase-admin";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
+// 1. User Signup (First-time password change)
+router.post("/signup", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const userRef = db.collection("coordinators").doc(email);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) return res.status(400).json({ error: "Coordinator not found" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await userRef.update({ password: hashedPassword, isActive: true });
+
+    res.json({ message: "Password updated successfully. You can now log in." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 2. User Login
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log("Login attempt for:", email, password ? "Password provided" : "No password");
+    const userSnapshot = await db.collection("coordinators").where("email", "==", email).get();
+
+    if (userSnapshot.empty) return res.status(400).json({ error: "Coordinator not found" });
+
+    const user = userSnapshot.docs[0].data();
+
+    // const isMatch = await bcrypt.compare(password, user.password);
+    // if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
+
+    if (user.password !== password) return res.status(400).json({ error: "Invalid credentials" });
+
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.json({ token, user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 3. Forgot Password (Admin resets to default)
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const defaultPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+    await db.collection("coordinators").doc(email).update({ password: hashedPassword });
+
+    res.json({ message: "Password reset. Check your email." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // 1. Create User and Set Default Password
 router.post("/create-user", async (req, res) => {
   try {
-    const { roll, email, phone } = req.body;
+    const { roll, name } = req.body;
+
+    if (!roll || !name) {
+      return res.status(400).json({ error: "Roll and Name are required" });
+    }
+
     const defaultPassword = Math.random().toString(36).substring(2, 8);
 
     const userRef = db.collection("students").doc(roll);
     await userRef.set({
       roll,
-      email,
-      phone,
+      name,
       password: defaultPassword,
       isActive: false,
       passwordChanged: false,
@@ -30,18 +94,17 @@ router.post("/create-user", async (req, res) => {
 router.post("/create-users", async (req, res) => {
   try {
     const users = req.body;
-    console.log("Users: ", users);
+    // console.log("Users: ", users);
     const batch = db.batch();
 
     users.forEach((user) => {
-      const { roll, email, phone } = user;
+      const { roll, name } = user;
       const rollString = roll.toString();
       const defaultPassword = Math.random().toString(36).substring(2, 8);
       const userRef = db.collection("students").doc(rollString);
       batch.set(userRef, {
         roll: rollString,
-        email,
-        phone,
+        name,
         password: defaultPassword,
         isActive: false,
         passwordChanged: false,
@@ -51,6 +114,7 @@ router.post("/create-users", async (req, res) => {
     await batch.commit();
     res.status(201).json({ message: "Users created and passwords sent." });
   } catch (error) {
+    console.error("Error creating users: ", error);
     res.status(500).json({ error: error.message });
   }
 });

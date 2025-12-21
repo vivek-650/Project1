@@ -55,6 +55,7 @@ const StudentLogin = () => {
       const data = await response.json();
       if (response.ok) {
         if (response.status === 203) {
+          setName(data.name || "");
           setUpdateProfilePopup(true);
           setLoading(false);
           return;
@@ -267,7 +268,8 @@ const StudentLogin = () => {
               type="text"
               placeholder="Name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              // onChange={(e) => setName(e.target.value)}
+              readonly
             />
             <Input
               type="text"

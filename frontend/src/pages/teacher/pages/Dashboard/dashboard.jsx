@@ -12,13 +12,13 @@ const Dashboard = () => {
   const [announcements, setAnnouncements] = useState([]);
 
   const quickActions = [
-    {
-      title: "Add Users",
-      description: "Add new students to the system",
-      icon: UserPlus,
-      path: "/supervisor/dashboard/add-users",
-      color: "text-blue-500",
-    },
+    // {
+    //   title: "Add Users",
+    //   description: "Add new students to the system",
+    //   icon: UserPlus,
+    //   path: "/supervisor/dashboard/add-users",
+    //   color: "text-blue-500",
+    // },
     {
       title: "View Users",
       description: "Manage student accounts",
