@@ -4,6 +4,7 @@ import { Layout } from "../teacher/components/Layout";
 import { Requests } from "../teacher/pages/Requests/Requests";
 import { Users } from "../teacher/pages/Users/Users";
 import Dashboard from "../teacher/pages/Dashboard/dashboard";
+import Teams from "../teacher/pages/Teams/Teams";
 import { AddUsers } from "../teacher/pages/AddUsers/AddUsers";
 
 // Simple Coming Soon banner component
@@ -31,6 +32,7 @@ const TeacherRoutes = () => {
         <Route path="/settings" element={<ComingSoon />} />
         <Route path="/reports" element={<ComingSoon />} />
         <Route path="*" element={<ComingSoon />} />
+        <Route path={"/teams"} element={<Teams />} />
       </Route>
     </Routes>
   );
