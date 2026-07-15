@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed:supervisors": "node scripts/seedSupervisors.js",
+    "seed:students": "node scripts/seedStudents.js",
+    "seed:coordinators": "node scripts/seedCoordinators.js"
   },
   "author": "",
   "license": "ISC",

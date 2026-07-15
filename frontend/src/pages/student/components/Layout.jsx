@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import {
   BookOpen,
   FileText,
+  ListOrdered,
   Upload,
   PlusCircle,
   Settings,
@@ -66,6 +67,18 @@ export const Layout = () => {
       name: "Account Settings",
       link: "/student/dashboard/account-setting",
       icon: Settings,
+    },
+    {
+      id: "6",
+      name: "Team Formation",
+      link: "/student/dashboard/team-formation",
+      icon: Users,
+    },
+    {
+      id: "7",
+      name: "Project List",
+      link: "/student/dashboard/project-list",
+      icon: ListOrdered,
     },
   ];
 

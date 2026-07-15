@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Users, FileCheck, Bell, Settings } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
@@ -9,7 +10,7 @@ const Dashboard = () => {
   const name = sessionStorage.getItem("name") || "Teacher";
   const [studentCount, setStudentCount] = useState("-");
   const [teamCount, setTeamCount] = useState("-");
-  const [announcements, setAnnouncements] = useState([]);
+  const [requiredProjects, setRequiredProjects] = useState("-");
 
   const quickActions = [
     // {
@@ -32,6 +33,13 @@ const Dashboard = () => {
       icon: FileCheck,
       path: "/supervisor/dashboard/requests",
       color: "text-purple-500",
+    },
+    {
+      title: "Project Reports",
+      description: "Submit assigned project details",
+      icon: FileText,
+      path: "/supervisor/dashboard/project-reports",
+      color: "text-orange-500",
     },
   ];
 
@@ -61,21 +69,23 @@ const Dashboard = () => {
     }
   };
 
-  //fetch announcements data
-  const fetchAnnouncements = async () => {
+  const fetchRequiredProjects = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/notices`);
-      if (!response.ok) throw new Error("Failed to fetch announcements");
+      const email = sessionStorage.getItem("email");
+      if (!email) return;
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/supervisor/project-reports/summary/${encodeURIComponent(email)}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch required projects");
       const data = await response.json();
-      // console.log("Fetched announcements:", data);
-      setAnnouncements(data);
+      setRequiredProjects(data?.meta?.projectsPerSupervisor ?? "-");
     } catch (error) {
-      console.error("Error fetching announcements:", error);
+      console.error("Error fetching required projects:", error);
     }
   };
 
   useEffect(() => {
-    Promise.all([fetchCountStudents(), fetchCountTeams(), fetchAnnouncements()]);
+    Promise.all([fetchCountStudents(), fetchCountTeams(), fetchRequiredProjects()]);
   }, []);
 
   return (
@@ -130,12 +140,12 @@ const Dashboard = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Announcements</CardTitle>
+              <CardTitle className="text-sm font-medium">Required Projects</CardTitle>
               <Bell className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{announcements.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Posted notices</p>
+              <div className="text-2xl font-bold">{requiredProjects}</div>
+              <p className="text-xs text-muted-foreground mt-1">Projects to submit</p>
             </CardContent>
           </Card>
         </div>

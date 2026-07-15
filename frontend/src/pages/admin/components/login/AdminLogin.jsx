@@ -32,6 +32,8 @@ const AdminLogin = () => {
       }
       console.log("Login successful:", data);
       sessionStorage.setItem("coordinatorToken", data.token);
+      sessionStorage.setItem("email", data.user?.email || email);
+      sessionStorage.setItem("name", data.user?.name || "Coordinator");
       navigate("/coordinator/dashboard");
     } catch (error) {
       console.error("Login error:", error);

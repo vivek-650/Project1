@@ -6,6 +6,7 @@ import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import superAdminRoutes from "./routes/superAdminRoutes.js";
 import teamRoutes from "./routes/teamRoutes.js";
+import supervisorRoutes from "./routes/supervisorRoutes.js";
 
 // import { app as firebaseApp, auth, db, storage } from "./config/firebase.js"; // ✅ Rename firebase app
 import { db, storage } from "./config/firebase.js";
@@ -20,7 +21,8 @@ app.use(bodyParser.json());
 // Routes
 
 app.use("/api/admin", adminRoutes);
-app.use("/api/supervisor", coordinatorRoutes);
+app.use("/api/coordinator", coordinatorRoutes);
+app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/super-admin", superAdminRoutes);
