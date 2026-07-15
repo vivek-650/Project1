@@ -16,9 +16,7 @@ const Notices = () => {
 
   const fetchNotices = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/super-admin/notices`
-      );
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/super-admin/notices`);
       setNotices(res.data);
     } catch (err) {
       toast.error("Failed to fetch notices.");
@@ -66,12 +64,10 @@ const Notices = () => {
   );
 
   return (
-    <div className="relative min-h-screen font-sans text-gray-800">
+    <div className="relative min-h-screen font-sans text-gray-800 p-10">
       {/* Header + Search */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold text-gray-900 tracking-tight">
-          Notices Overview
-        </h2>
+        <h2 className="text-3xl font-semibold text-gray-900 tracking-tight">Notices Overview</h2>
         <input
           type="text"
           placeholder="Search notices..."
@@ -97,15 +93,11 @@ const Notices = () => {
             {filteredNotices.map((notice, index) => (
               <tr key={notice.id} className="border-b hover:bg-gray-50">
                 <td className="px-6 py-4">{notice.serialNo}</td>
-                <td className="px-6 py-4 font-medium text-gray-900">
-                  {notice.title}
-                </td>
+                <td className="px-6 py-4 font-medium text-gray-900">{notice.title}</td>
                 <td className="px-6 py-4 capitalize">{notice.target}</td>
                 <td className="px-6 py-4">
                   {notice.createdAt?._seconds
-                    ? new Date(
-                        notice.createdAt._seconds * 1000
-                      ).toLocaleDateString()
+                    ? new Date(notice.createdAt._seconds * 1000).toLocaleDateString()
                     : "Unknown"}
                 </td>
                 <td className="px-6 py-4">
@@ -138,7 +130,7 @@ const Notices = () => {
       {/* Add Notice Button */}
       <button
         onClick={() => setFormOpen(true)}
-  className="fixed bottom-6 right-6 bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:bg-primary/90 hover:shadow-xl transition"
+        className="fixed bottom-6 right-6 bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:bg-primary/90 hover:shadow-xl transition"
       >
         <Plus />
       </button>
@@ -154,15 +146,11 @@ const Notices = () => {
               <X />
             </button>
 
-            <h3 className="text-2xl font-semibold mb-4 text-gray-800">
-              Create New Notice
-            </h3>
+            <h3 className="text-2xl font-semibold mb-4 text-gray-800">Create New Notice</h3>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Notice Subject
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Notice Subject</label>
                 <input
                   type="text"
                   value={title}
@@ -173,9 +161,7 @@ const Notices = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -185,9 +171,7 @@ const Notices = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Target Audience
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Target Audience</label>
                 <select
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}

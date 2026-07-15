@@ -45,8 +45,8 @@ router.post("/create", async (req, res) => {
     // Validate invited members: they must exist and not be in a team
     const invited = [];
     for (const m of members) {
-      if (!m.roll || !m.name || !m.email) {
-        return res.status(400).json({ message: "Each member must have roll, name & email" });
+      if (!m.roll || !m.name) {
+        return res.status(400).json({ message: "Each member must have roll, name " });
       }
       const student = await findStudentByRoll(m.roll);
       if (!student) return res.status(404).json({ message: `Invited student ${m.roll} not found` });

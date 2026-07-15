@@ -58,13 +58,13 @@ const TeamFormation = () => {
 
   // Fetch current student's role (leader/member) using stored email
   useEffect(() => {
-    const email = sessionStorage.getItem("email");
+    const email = sessionStorage.getItem("roll");
     if (!email) return;
     let active = true;
     (async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/user/user-details/${encodeURIComponent(email)}`
+          `${import.meta.env.VITE_BASE_URL}/api/user/user-details/${encodeURIComponent(roll)}`
         );
         const list = Array.isArray(res.data) ? res.data : [];
         const me = list[0];

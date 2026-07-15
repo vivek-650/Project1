@@ -97,8 +97,8 @@ const CreateTeamForm = ({ onCreated }) => {
       return false;
     }
     // Ensure name & email are present (they should be auto-filled when a roll is chosen)
-    if (members.some((m) => !String(m.name).trim() || !String(m.email).trim())) {
-      setError("Selected students must have name and email in the database.");
+    if (members.some((m) => !String(m.name).trim())) {
+      setError("Selected students must have name in the database.");
       return false;
     }
     setError("");
