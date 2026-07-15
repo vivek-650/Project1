@@ -8,6 +8,7 @@ import {
   Users,
   UserPlus,
   FileCheck,
+  FileText,
   LogOut,
   Menu,
   ChevronLeft,
@@ -52,6 +53,12 @@ export const Layout = () => {
       name: "Teams",
       link: "/supervisor/dashboard/teams",
       icon: Layers,
+    },
+    {
+      id: "5",
+      name: "Project Reports",
+      link: "/supervisor/dashboard/project-reports",
+      icon: FileText,
     },
   ];
 

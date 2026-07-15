@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, Bell, Settings, Shield, FileText, Activity } from "lucide-react";
 import { useEffect } from "react";
+import { useState } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const adminName = sessionStorage.getItem("name") || "Admin";
+  const [allocation, setAllocation] = useState({ totalTeams: 0, projectsPerSupervisor: 0 });
 
   const quickActions = [
     {
@@ -45,8 +47,23 @@ const Dashboard = () => {
     }
   };
 
+  const fetchProjectAllocation = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/coordinator/project-reports/summary`);
+      if (!response.ok) return;
+      const data = await response.json();
+      setAllocation({
+        totalTeams: data?.meta?.totalTeams || 0,
+        projectsPerSupervisor: data?.meta?.projectsPerSupervisor || 0,
+      });
+    } catch (error) {
+      console.error("Error fetching project allocation:", error);
+    }
+  };
+
   useEffect(() => {
     fetchStudents();
+    fetchProjectAllocation();
   }, []);
 
   return (
@@ -96,26 +113,23 @@ const Dashboard = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Notices</CardTitle>
+              <CardTitle className="text-sm font-medium">Teams (4/Team)</CardTitle>
               <Bell className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
-              <p className="text-xs text-muted-foreground mt-1">Published announcements</p>
+              <div className="text-2xl font-bold">{allocation.totalTeams}</div>
+              <p className="text-xs text-muted-foreground mt-1">Calculated from total students</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">System Status</CardTitle>
+              <CardTitle className="text-sm font-medium">Projects per Supervisor</CardTitle>
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-lg font-semibold">Operational</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">All systems running</p>
+              <div className="text-2xl font-bold">{allocation.projectsPerSupervisor}</div>
+              <p className="text-xs text-muted-foreground mt-1">Required submission target</p>
             </CardContent>
           </Card>
         </div>

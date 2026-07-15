@@ -21,43 +21,45 @@ export const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const userName = sessionStorage.getItem("name") || "Admin";
+  const isCoordinator = location.pathname.startsWith("/coordinator");
+  const basePath = isCoordinator ? "/coordinator/dashboard" : "/administrator/dashboard";
 
   const menuItems = [
     {
       id: "0",
       name: "Dashboard",
-      link: "/administrator/dashboard",
+      link: `${basePath}`,
       icon: Home,
     },
     {
       id: "2",
       name: "Notices",
-      link: "/administrator/dashboard/notices",
+      link: `${basePath}/notices`,
       icon: FileText,
     },
     {
       id: "3",
       name: "Students",
-      link: "/administrator/dashboard/students",
+      link: `${basePath}/students`,
       icon: Users,
     },
     {
       id: "4",
-      name: "Projects",
-      link: "/administrator/dashboard/projects",
+      name: "Project Reports",
+      link: `${basePath}/project-reports`,
       icon: Book,
     },
     {
       id: "5",
       name: "Supervisors",
-      link: "/administrator/dashboard/supervisors",
+      link: `${basePath}/supervisors`,
       icon: LayoutDashboard,
     },
   ];
 
   const handleLogout = () => {
     sessionStorage.clear();
-    navigate("/administrator");
+    navigate(isCoordinator ? "/coordinator" : "/administrator");
   };
 
   const isActive = (path) => location.pathname === path;

@@ -51,6 +51,9 @@ const TeacherLogin = () => {
 
         const data = await response.json();
         sessionStorage.setItem("supervisorToken", data.token);
+        sessionStorage.setItem("email", data.user?.email || email);
+        sessionStorage.setItem("name", data.user?.name || "Supervisor");
+        sessionStorage.setItem("contactNo", data.user?.contactNo || data.user?.phone || "");
         alert("Login successful!");
         navigate("/supervisor/dashboard");
       } catch (error) {

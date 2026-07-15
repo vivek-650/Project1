@@ -8,6 +8,7 @@ import Uploaded from "../student/pages/uploaded/Uploaded";
 import AddRecepies from "../student/pages/AddRecepies/AddRecepies";
 import AccoutSetting from "../student/pages/accountSetting/AccoutSetting";
 import TeamFormation from "../student/pages/teamFormation/TeamFormation";
+import ProjectList from "../student/pages/projectList/ProjectList";
 const StudentRoutes = () => {
   return (
     <Routes>
@@ -20,6 +21,7 @@ const StudentRoutes = () => {
         <Route path={"/new-recepie"} element={<AddRecepies />} />
         <Route path={"/account-setting"} element={<AccoutSetting />} />
         <Route path={"/team-formation"} element={<TeamFormation />} />
+        <Route path={"/project-list"} element={<ProjectList />} />
       </Route>
     </Routes>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Users, FileText, Bell, UserCircle, BookOpen, Calendar, RefreshCcw } from "lucide-react";
+import { ListOrdered } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Dashboard = () => {
   const [team, setTeam] = useState(null);
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       // Fetch team status
@@ -33,10 +34,10 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [roll]);
   useEffect(() => {
     fetchData();
-  }, [roll]);
+  }, [fetchData]);
 
   const quickActions = [
     {
@@ -66,6 +67,13 @@ const Dashboard = () => {
       icon: Bell,
       path: "/student/notice",
       color: "text-orange-500",
+    },
+    {
+      title: "Project List",
+      description: "View published project report list",
+      icon: ListOrdered,
+      path: "/student/dashboard/project-list",
+      color: "text-sky-500",
     },
   ];
 
